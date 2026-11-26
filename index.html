@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>心灵晴雨表 · 心理健康小测试</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap">
+<script src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root{
+    --blue-900:#1F4E79;
+    --blue-700:#3E7CB1;
+    --blue-500:#6FA8DC;
+    --blue-300:#A8D4F0;
+    --blue-100:#DCEEF9;
+    --blue-50:#F2F8FD;
+    --ink:#2C3E50;
+    --ink-soft:#6B7C8F;
+    --white:#FFFFFF;
+    --bg:#EAF4FB;
+    --radius:20px;
+    --shadow:0 8px 28px rgba(62,124,177,.14);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;min-height:100vh;
+  }
+  .app{
+    max-width:480px;margin:0 auto;min-height:100vh;
+    background:linear-gradient(180deg,#F2F8FD 0%,#E7F2FA 100%);
+    position:relative;overflow:hidden;display:flex;flex-direction:column;
+  }
+
+  /* ===== 通用视图 ===== */
+  .view{display:none;flex:1;flex-direction:column;padding:28px 22px 34px;animation:fadeIn .35s ease;}
+  .view.active{display:flex;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ===== 封面页 ===== */
+  .cover{justify-content:center;align-items:center;text-align:center;position:relative;min-height:100vh;}
+  .blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.55;pointer-events:none;}
+  .blob.b1{width:220px;height:220px;background:var(--blue-300);top:-60px;left:-70px;}
+  .blob.b2{width:160px;height:160px;background:var(--blue-100);bottom:12%;right:-50px;}
+  .blob.b3{width:90px;height:90px;background:#C9E6F7;top:30%;right:30%;}
+  .cover-tag{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--white);border:1px solid var(--blue-100);
+    color:var(--blue-700);font-size:13px;font-weight:500;
+    padding:7px 16px;border-radius:999px;box-shadow:var(--shadow);
+    margin-bottom:28px;position:relative;z-index:1;
+  }
+  .cover-tag .dot{width:7px;height:7px;border-radius:50%;background:var(--blue-500);}
+  .cover h1{
+    font-size:38px;font-weight:900;color:var(--blue-900);
+    letter-spacing:4px;margin-bottom:16px;position:relative;z-index:1;
+  }
+  .cover .sub{
+    font-size:15px;color:var(--ink-soft);max-width:300px;
+    margin-bottom:34px;position:relative;z-index:1;
+  }
+  .cover-cards{display:flex;gap:12px;width:100%;margin-bottom:38px;position:relative;z-index:1;}
+  .cover-card{flex:1;background:var(--white);border-radius:16px;padding:16px 8px;box-shadow:var(--shadow);}
+  .cover-card .num{font-size:20px;font-weight:700;color:var(--blue-700);}
+  .cover-card .label{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .btn-primary{
+    border:none;cursor:pointer;font-family:inherit;
+    background:linear-gradient(135deg,var(--blue-500),var(--blue-700));
+    color:#fff;font-size:17px;font-weight:700;letter-spacing:2px;
+    padding:16px 44px;border-radius:999px;box-shadow:0 10px 24px rgba(62,124,177,.35);
+    transition:transform .15s ease,box-shadow .15s ease;position:relative;z-index:1;
+  }
+  .btn-primary:active{transform:scale(.96);}
+  .cover-note{margin-top:22px;font-size:12px;color:var(--ink-soft);position:relative;z-index:1;}
+
+  /* ===== 测试页 ===== */
+  .quiz-head{margin-bottom:20px;}
+  .quiz-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .quiz-meta .step{font-size:13px;color:var(--blue-700);font-weight:500;}
+  .quiz-meta .total{font-size:13px;color:var(--ink-soft);}
+  .progress{height:8px;background:var(--blue-100);border-radius:999px;overflow:hidden;}
+  .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--blue-300),var(--blue-700));border-radius:999px;transition:width .3s ease;}
+  .question-card{
+    background:var(--white);border-radius:var(--radius);padding:26px 22px;
+    box-shadow:var(--shadow);margin-bottom:22px;
+  }
+  .question-card .q-index{font-size:12px;color:var(--blue-500);font-weight:500;letter-spacing:1px;margin-bottom:10px;}
+  .question-card .q-text{font-size:19px;font-weight:700;color:var(--ink);line-height:1.6;}
+  .options{display:flex;flex-direction:column;gap:14px;}
+  .option{
+    background:var(--white);border:1.5px solid var(--blue-100);border-radius:18px;
+    padding:17px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;
+    transition:all .18s ease;
+  }
+  .option .badge{
+    flex:none;width:30px;height:30px;border-radius:10px;background:var(--blue-50);
+    color:var(--blue-700);font-weight:700;font-size:14px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .option .opt-text{font-size:15px;color:var(--ink);}
+  .option.selected{border-color:var(--blue-500);background:var(--blue-50);box-shadow:0 6px 18px rgba(111,168,220,.25);}
+  .option.selected .badge{background:var(--blue-700);color:#fff;}
+  .option:active{transform:scale(.98);}
+  .quiz-footer{display:flex;gap:14px;margin-top:auto;padding-top:20px;}
+  .btn-ghost{
+    flex:none;border:1.5px solid var(--blue-300);background:var(--white);color:var(--blue-700);
+    font-family:inherit;font-size:15px;font-weight:500;padding:14px 22px;border-radius:16px;cursor:pointer;
+  }
+  .btn-ghost:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-next{
+    flex:1;border:none;cursor:pointer;font-family:inherit;
+    background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;
+    font-size:16px;font-weight:700;padding:14px;border-radius:16px;
+  }
+  .btn-next:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* ===== 结果页 ===== */
+  .result-head{text-align:center;margin-bottom:18px;}
+  .result-head .tag{font-size:13px;color:var(--blue-700);letter-spacing:1px;}
+  .score-ring{
+    width:150px;height:150px;margin:16px auto;position:relative;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .score-ring svg{position:absolute;inset:0;transform:rotate(-90deg);}
+  .score-ring .score-num{font-size:36px;font-weight:900;color:var(--blue-900);}
+  .score-ring .score-unit{font-size:12px;color:var(--ink-soft);}
+  .verdict{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px;}
+  .verdict .v-title{font-size:18px;font-weight:700;color:var(--blue-700);margin-bottom:8px;}
+  .verdict .v-desc{font-size:14px;color:var(--ink-soft);}
+  .chart-wrap{background:var(--white);border-radius:var(--radius);padding:16px 10px;box-shadow:var(--shadow);margin-bottom:20px;}
+  .chart-wrap .chart-title{font-size:15px;font-weight:700;color:var(--ink);padding:6px 10px 0;}
+  #radar{width:100%;height:300px;}
+  .dim-list{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+  .dim-item{background:var(--white);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);}
+  .dim-item .dim-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .dim-item .dim-name{font-size:15px;font-weight:600;}
+  .dim-item .dim-score{font-size:14px;font-weight:700;color:var(--blue-700);}
+  .dim-bar{height:7px;background:var(--blue-100);border-radius:999px;overflow:hidden;}
+  .dim-bar .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue-300),var(--blue-700));}
+  .dim-item .dim-desc{font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .btn-retry{
+    width:100%;border:1.5px solid var(--blue-300);background:var(--white);color:var(--blue-700);
+    font-family:inherit;font-size:16px;font-weight:600;padding:15px;border-radius:16px;cursor:pointer;
+  }
+  .disclaimer{margin-top:18px;font-size:12px;color:var(--ink-soft);text-align:center;line-height:1.7;}
+
+  @media (max-width:380px){
+    .cover h1{font-size:32px;letter-spacing:2px;}
+    .question-card .q-text{font-size:17px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== 视图：封面 ===== -->
+  <section id="cover" class="view active cover">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+    <span class="cover-tag"><span class="dot"></span><span>自我探索 · 趣味自评</span></span>
+    <h1>心灵晴雨表</h1>
+    <p class="sub">十五道小题，看看此刻的你，内心是晴空、多云，还是飘着小雨。</p>
+    <div class="cover-cards">
+      <div class="cover-card"><div class="num">15</div><div class="label">道情境题</div></div>
+      <div class="cover-card"><div class="num">6</div><div class="label">个心理维度</div></div>
+      <div class="cover-card"><div class="num">3</div><div class="label">分钟左右</div></div>
+    </div>
+    <button class="btn-primary" id="startBtn">开始测试</button>
+    <p class="cover-note">答案没有对错，凭第一直觉选择就好</p>
+  </section>
+
+  <!-- ===== 视图：测试 ===== -->
+  <section id="quiz" class="view">
+    <div class="quiz-head">
+      <div class="quiz-meta">
+        <span class="step" id="stepLabel">第 1 / 15 题</span>
+        <span class="total">凭直觉作答</span>
+      </div>
+      <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    </div>
+    <div class="question-card">
+      <div class="q-index" id="qIndex">QUESTION 01</div>
+      <div class="q-text" id="qText"></div>
+    </div>
+    <div class="options" id="options"></div>
+    <div class="quiz-footer">
+      <button class="btn-ghost" id="prevBtn">上一题</button>
+      <button class="btn-next" id="nextBtn" disabled>下一题</button>
+    </div>
+  </section>
+
+  <!-- ===== 视图：结果 ===== -->
+  <section id="result" class="view">
+    <div class="result-head">
+      <span class="tag">你的内心天气</span>
+      <div class="score-ring">
+        <svg viewBox="0 0 150 150">
+          <circle cx="75" cy="75" r="64" fill="none" stroke="#DCEEF9" stroke-width="11"/>
+          <circle id="ringFg" cx="75" cy="75" r="64" fill="none" stroke="#3E7CB1" stroke-width="11"
+            stroke-linecap="round" stroke-dasharray="402" stroke-dashoffset="402"/>
+        </svg>
+        <div class="score-num" id="totalScore">0</div>
+        <div class="score-unit">综合状态分</div>
+      </div>
+    </div>
+    <div class="verdict">
+      <div class="v-title" id="verdictTitle"></div>
+      <div class="v-desc" id="verdictDesc"></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">六维内心雷达图</div>
+      <div id="radar"></div>
+    </div>
+    <div class="dim-list" id="dimList"></div>
+    <button class="btn-retry" id="retryBtn">重新测一次</button>
+    <p class="disclaimer">本测试为趣味自评工具，结果仅供自我觉察参考，<br>不能替代专业心理诊断；若长期情绪低落，请寻求专业帮助。</p>
+  </section>
+
+</div>
+
+<script>
+/* ================= 数据 ================= */
+const DIMENSIONS = [
+  { key:"emotion", name:"情绪状态", desc:"情绪是否平稳，能否觉察并调节感受" },
+  { key:"stress",  name:"压力耐受", desc:"面对突发与挫折时，恢复的速度与韧性" },
+  { key:"social",  name:"人际联结", desc:"被理解、被支持，以及与人靠近的安全感" },
+  { key:"energy",  name:"精力睡眠", desc:"休息是否充足，身体与精神的活力储备" },
+  { key:"self",    name:"自我接纳", desc:"对自己的包容度，看见优点也容纳不完美" },
+  { key:"meaning", name:"意义方向", desc:"对生活的掌控感，以及前行的理由与温度" }
+];
+
+const QUESTIONS = [
+  { dim:"emotion", text:"清晨醒来，一想到今天要面对的人和事，我的第一反应通常是——",
+    options:[
+      { label:"A", text:"心里一沉，实在提不起劲", score:1 },
+      { label:"B", text:"有些烦躁，但还能勉强应付", score:2 },
+      { label:"C", text:"波澜不惊，按部就班就好", score:3 },
+      { label:"D", text:"平静从容，甚至有点小期待", score:4 }
+    ]},
+  { dim:"stress", text:"一件毫无准备的突发任务砸过来，我的内心更接近哪种状态？",
+    options:[
+      { label:"A", text:"大脑一片空白，只想立刻逃开", score:1 },
+      { label:"B", text:"焦虑很久，反复在心里内耗", score:2 },
+      { label:"C", text:"先接住情绪，再慢慢拆解问题", score:3 },
+      { label:"D", text:"当作一次挑战，着手去做就好", score:4 }
+    ]},
+  { dim:"social", text:"最近一周，我是否有过被人真正理解、可以卸下防备的对话？",
+    options:[
+      { label:"A", text:"完全没有，习惯了独自扛着", score:1 },
+      { label:"B", text:"很少，也懒得主动说起", score:2 },
+      { label:"C", text:"有一两个可以说真心话的人", score:3 },
+      { label:"D", text:"身边围绕着让我安心的关系", score:4 }
+    ]},
+  { dim:"energy", text:"过去一个月，我的睡眠和白天精力大致是——",
+    options:[
+      { label:"A", text:"入睡困难或易醒，白天疲惫不堪", score:1 },
+      { label:"B", text:"时好时坏，靠咖啡硬撑着", score:2 },
+      { label:"C", text:"基本够用，偶尔感到倦怠", score:3 },
+      { label:"D", text:"睡得安稳，白天有充沛活力", score:4 }
+    ]},
+  { dim:"self", text:"站在镜子前打量自己，我对自己的整体感受更接近——",
+    options:[
+      { label:"A", text:"常常挑剔自己，这也不好那也不行", score:1 },
+      { label:"B", text:"只在被人比较时才否定自己", score:2 },
+      { label:"C", text:"接纳缺点，也看得见自己的优点", score:3 },
+      { label:"D", text:"喜欢现在的自己，包括那些不完美", score:4 }
+    ]},
+  { dim:"meaning", text:"我是否清楚自己当下生活的方向，知道自己在为什么而努力？",
+    options:[
+      { label:"A", text:"很迷茫，像在随波逐流", score:1 },
+      { label:"B", text:"有目标，但常觉得没什么意思", score:2 },
+      { label:"C", text:"大致清楚，偶尔会自我怀疑", score:3 },
+      { label:"D", text:"方向明确，愿意为之投入热情", score:4 }
+    ]},
+  { dim:"emotion", text:"坏情绪突然袭来时，我通常会——",
+    options:[
+      { label:"A", text:"被它淹没，长时间走不出来", score:1 },
+      { label:"B", text:"压抑下去，假装什么事都没有", score:2 },
+      { label:"C", text:"承认它存在，慢慢让它过去", score:3 },
+      { label:"D", text:"觉察情绪，并主动把它调平稳", score:4 }
+    ]},
+  { dim:"stress", text:"回想最近一次挫折，我花了多久重新站起来？",
+    options:[
+      { label:"A", text:"很久，至今还困在那片阴影里", score:1 },
+      { label:"B", text:"挺久，主要靠时间慢慢熬", score:2 },
+      { label:"C", text:"几天到一周左右就能缓过来", score:3 },
+      { label:"D", text:"很快，复盘过后便继续往前走", score:4 }
+    ]},
+  { dim:"social", text:"身处人群之中，我通常的状态是——",
+    options:[
+      { label:"A", text:"感到疏离，仿佛融不进去", score:1 },
+      { label:"B", text:"客气寒暄，始终保持距离", score:2 },
+      { label:"C", text:"能自然地交流与互动", score:3 },
+      { label:"D", text:"放松自在，愿意主动去联结", score:4 }
+    ]},
+  { dim:"energy", text:"属于自己的闲暇时间，我大多用来——",
+    options:[
+      { label:"A", text:"瘫着刷手机，却越刷越累", score:1 },
+      { label:"B", text:"应付琐事，几乎没有喘息空间", score:2 },
+      { label:"C", text:"做点喜欢的事，慢慢回血", score:3 },
+      { label:"D", text:"有自己的节奏，张弛有度", score:4 }
+    ]},
+  { dim:"self", text:"别人的一句批评，通常会在我心里停留多久？",
+    options:[
+      { label:"A", text:"反复回味，连着自己一起否定", score:1 },
+      { label:"B", text:"难受一阵，久久难以释怀", score:2 },
+      { label:"C", text:"想想有无道理，然后放下", score:3 },
+      { label:"D", text:"对事不对人，很快不往心里去", score:4 }
+    ]},
+  { dim:"self", text:"和过去的自己相比，我觉得现在的我——",
+    options:[
+      { label:"A", text:"越来越糟糕，常常力不从心", score:1 },
+      { label:"B", text:"停滞不前，一直在原地打转", score:2 },
+      { label:"C", text:"在慢慢变成想要的样子", score:3 },
+      { label:"D", text:"能清楚看见自己的成长与力量", score:4 }
+    ]},
+  { dim:"meaning", text:"若把今天从生命里删掉重来，我会觉得这段时间——",
+    options:[
+      { label:"A", text:"空虚虚度，什么也没留下", score:1 },
+      { label:"B", text:"平淡如水，没什么印象", score:2 },
+      { label:"C", text:"有一些值得回味的片段", score:3 },
+      { label:"D", text:"充实满足，觉得活着真好", score:4 }
+    ]},
+  { dim:"social", text:"遇到难处时，开口向别人求助的可能性有多大？",
+    options:[
+      { label:"A", text:"几乎不会，怕被拒绝也怕麻烦人", score:1 },
+      { label:"B", text:"犹豫很久，最后多半自己硬扛", score:2 },
+      { label:"C", text:"必要时会找信任的人聊聊", score:3 },
+      { label:"D", text:"坦然开口，也愿意成为别人的依靠", score:4 }
+    ]},
+  { dim:"emotion", text:"我能否分辨出自己此刻正在经历哪一种情绪？",
+    options:[
+      { label:"A", text:"常常只觉得难受，说不清是什么", score:1 },
+      { label:"B", text:"大概知道，但感觉很模糊", score:2 },
+      { label:"C", text:"能觉察到自己的情绪变化", score:3 },
+      { label:"D", text:"清晰命名情绪，并理解它的来由", score:4 }
+    ]}
+];
+
+/* ================= 状态 ================= */
+const state = { current:0, answers:new Array(QUESTIONS.length).fill(null) };
+
+const $ = id => document.getElementById(id);
+const views = { cover:$("cover"), quiz:$("quiz"), result:$("result") };
+
+function showView(name){
+  Object.values(views).forEach(v => v.classList.remove("active"));
+  views[name].classList.add("active");
+  window.scrollTo(0,0);
+}
+
+/* ================= 测试渲染 ================= */
+function renderQuestion(){
+  const i = state.current;
+  const q = QUESTIONS[i];
+  $("stepLabel").textContent = `第 ${i+1} / ${QUESTIONS.length} 题`;
+  $("progressBar").style.width = ((i) / QUESTIONS.length * 100) + "%";
+  $("qIndex").textContent = "QUESTION " + String(i+1).padStart(2,"0");
+  $("qText").textContent = q.text;
+
+  const box = $("options");
+  box.innerHTML = "";
+  q.options.forEach((opt, idx) => {
+    const el = document.createElement("div");
+    el.className = "option" + (state.answers[i] === idx ? " selected" : "");
+    el.innerHTML = `<div class="badge"><span>${opt.label}</span></div><div class="opt-text"><span>${opt.text}</span></div>`;
+    el.addEventListener("click", () => selectOption(idx, el));
+    box.appendChild(el);
+  });
+
+  $("prevBtn").disabled = i === 0;
+  const nextBtn = $("nextBtn");
+  nextBtn.disabled = state.answers[i] === null;
+  nextBtn.textContent = i === QUESTIONS.length - 1 ? "查看结果" : "下一题";
+}
+
+function selectOption(idx, el){
+  state.answers[state.current] = idx;
+  document.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
+  el.classList.add("selected");
+  $("nextBtn").disabled = false;
+  setTimeout(() => {
+    if(state.current < QUESTIONS.length - 1) nextQuestion();
+  }, 320);
+}
+
+function nextQuestion(){
+  if(state.answers[state.current] === null) return;
+  if(state.current < QUESTIONS.length - 1){
+    state.current++;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+$("nextBtn").addEventListener("click", nextQuestion);
+$("prevBtn").addEventListener("click", () => {
+  if(state.current > 0){ state.current--; renderQuestion(); }
+});
+
+$("startBtn").addEventListener("click", () => {
+  state.current = 0;
+  state.answers.fill(null);
+  showView("quiz");
+  renderQuestion();
+});
+
+/* ================= 计分与结果 ================= */
+function calcResult(){
+  const dimMap = {};
+  DIMENSIONS.forEach(d => dimMap[d.key] = { sum:0, count:0 });
+  let totalSum = 0;
+  QUESTIONS.forEach((q, i) => {
+    const opt = q.options[state.answers[i]];
+    dimMap[q.dim].sum += opt.score;
+    dimMap[q.dim].count++;
+    totalSum += opt.score;
+  });
+  const dimScores = DIMENSIONS.map(d => {
+    const m = dimMap[d.key];
+    return Math.round((m.sum / (m.count * 4)) * 100);
+  });
+  const total = Math.round((totalSum / (QUESTIONS.length * 4)) * 100);
+  return { dimScores, total };
+}
+
+function verdictOf(total){
+  if(total >= 80) return { title:"☀ 内心晴空万里", desc:"你此刻的状态在线且稳定，情绪有弹性，也带着对生活的掌控感。好好守住这份秩序，它是你向内生长的土壤。" };
+  if(total >= 65) return { title:"⛅ 偶有云翳，整体平稳", desc:"多数时候你能接住自己，只是某些角落还飘着几朵小云。不必急着驱散它们，觉察到，就是照顾的开始。" };
+  if(total >= 50) return { title:"🌥 风中有朵雨做的云", desc:"你近来有些疲惫，能量和情绪都在低位徘徊。记得给自己留白，先休息，再谈坚持。" };
+  return { title:"🌧 天空有些低沉", desc:"你承受的压力可能已经超出了日常能消化的范围。请放慢脚步，允许自己脆弱；若持续低落，记得向身边人或专业人士求助。" };
+}
+
+function finishQuiz(){
+  const { dimScores, total } = calcResult();
+  $("progressBar").style.width = "100%";
+
+  const C = 402;
+  const ring = $("ringFg");
+  ring.style.strokeDashoffset = C - (C * total / 100);
+  $("totalScore").textContent = total;
+
+  const v = verdictOf(total);
+  $("verdictTitle").textContent = v.title;
+  $("verdictDesc").textContent = v.desc;
+
+  const list = $("dimList");
+  list.innerHTML = "";
+  DIMENSIONS.forEach((d, i) => {
+    const score = dimScores[i];
+    const desc = score >= 80 ? "状态充沛，值得保持" : score >= 60 ? "尚可，仍有余地生长" : score >= 45 ? "略薄弱，需要多些关照" : "偏低，是近期最该留心的方向";
+    const item = document.createElement("div");
+    item.className = "dim-item";
+    item.innerHTML = `
+      <div class="dim-top">
+        <span class="dim-name">${d.name}</span>
+        <span class="dim-score">${score}</span>
+      </div>
+      <div class="dim-bar"><div class="fill" style="width:${score}%"></div></div>
+      <div class="dim-desc">${d.desc} · ${desc}</div>`;
+    list.appendChild(item);
+  });
+
+  showView("result");
+  renderRadar(dimScores);
+}
+
+function renderRadar(dimScores){
+  const chartEl = $("radar");
+  if(typeof echarts === "undefined"){
+    chartEl.innerHTML = "<div style='text-align:center;color:#6B7C8F;padding:60px 0;font-size:13px'>雷达图加载失败（需联网加载图表库），可参考下方维度得分</div>";
+    return;
+  }
+  const chart = echarts.init(chartEl);
+  chart.setOption({
+    grid:{ left:10, right:10, top:10, bottom:10 },
+    radar:{
+      indicator: DIMENSIONS.map(d => ({ name:d.name, max:100 })),
+      radius:"68%",
+      center:["50%","52%"],
+      axisName:{ color:"#2C3E50", fontSize:12 },
+      splitLine:{ lineStyle:{ color:"#DCEEF9" } },
+      splitArea:{ areaStyle:{ color:["#FFFFFF","#F2F8FD"] } },
+      axisLine:{ lineStyle:{ color:"#A8D4F0" } }
+    },
+    series:[{
+      type:"radar",
+      data:[{
+        value: dimScores,
+        name:"内心状态",
+        areaStyle:{ color:"rgba(111,168,220,.32)" },
+        lineStyle:{ color:"#3E7CB1", width:2 },
+        itemStyle:{ color:"#3E7CB1" },
+        symbolSize:5
+      }]
+    }]
+  });
+  window.addEventListener("resize", () => chart.resize());
+}
+
+$("retryBtn").addEventListener("click", () => {
+  state.current = 0;
+  state.answers.fill(null);
+  showView("cover");
+});
+</script>
+</body>
+</html>
