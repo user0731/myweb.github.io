@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
 <meta name="theme-color" content="#eaf3fc" />
 <title>你在关系里，是什么形状｜人格测试</title>
 <link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" />
@@ -24,7 +24,7 @@
     --r:22px;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;padding:0}
+  html,body{margin:0;padding:0;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
   body{
     font-family:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
     color:var(--ink);
@@ -947,6 +947,25 @@ $('btn-again').onclick = () => { state.i=0; state.ans.fill(null); renderQ(); sho
     const fine = window.matchMedia && window.matchMedia('(hover: hover)').matches;
     if(fine) setTimeout(()=>{ try{ input.focus(); }catch(e){} }, 260);
   }
+})();
+
+/* ============================================================
+   禁止双击缩放（手机端误触双击会放大）
+   仅拦截非交互区域的连续快速双击，按钮/选项的点击不受影响
+   ============================================================ */
+(function(){
+  let lastT = 0, lastX = 0, lastY = 0;
+  document.addEventListener('touchend', function(e){
+    const t = e.target;
+    if(t && t.closest && t.closest('button, input, a, label, .opt, .field, .eye')) return;
+    const now = Date.now();
+    const tp = e.changedTouches && e.changedTouches[0];
+    if(tp && now - lastT < 320 && Math.abs(tp.clientX - lastX) < 40 && Math.abs(tp.clientY - lastY) < 40){
+      e.preventDefault();
+    }
+    lastT = now;
+    if(tp){ lastX = tp.clientX; lastY = tp.clientY; }
+  }, { passive:false });
 })();
 </script>
 </body>
