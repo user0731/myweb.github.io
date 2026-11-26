@@ -1,511 +1,953 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>心灵晴雨表 · 心理健康小测试</title>
-<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap">
-<script src="https://fastly.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#eaf3fc" />
+<title>你在关系里，是什么形状｜人格测试</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" />
 <style>
   :root{
-    --blue-900:#1F4E79;
-    --blue-700:#3E7CB1;
-    --blue-500:#6FA8DC;
-    --blue-300:#A8D4F0;
-    --blue-100:#DCEEF9;
-    --blue-50:#F2F8FD;
-    --ink:#2C3E50;
-    --ink-soft:#6B7C8F;
-    --white:#FFFFFF;
-    --bg:#EAF4FB;
-    --radius:20px;
-    --shadow:0 8px 28px rgba(62,124,177,.14);
+    --bg:#eef5fc;
+    --bg2:#e2eeff;
+    --ink:#1e2b3a;
+    --ink-2:#4a5c6f;
+    --ink-3:#8398ae;
+    --blue:#2f7fc1;
+    --blue-d:#1f6099;
+    --blue-l:#a8cdf0;
+    --blue-x:#dbeafb;
+    --card:#ffffff;
+    --line:#e6eff9;
+    --shadow:0 10px 30px rgba(47,127,193,.10);
+    --shadow-s:0 4px 14px rgba(47,127,193,.08);
+    --r:22px;
   }
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{height:100%;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
   body{
-    font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
-    background:var(--bg);color:var(--ink);line-height:1.6;min-height:100vh;
+    font-family:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(120% 60% at 50% 0%, #ffffff 0%, rgba(255,255,255,0) 62%),
+      linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+    background-attachment:fixed;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    line-height:1.65;
   }
-  .app{
-    max-width:480px;margin:0 auto;min-height:100vh;
-    background:linear-gradient(180deg,#F2F8FD 0%,#E7F2FA 100%);
-    position:relative;overflow:hidden;display:flex;flex-direction:column;
-  }
+  .app{max-width:480px;margin:0 auto;padding:0 20px 56px;position:relative}
+  .view{display:none;animation:fade .42s cubic-bezier(.2,.7,.3,1) both}
+  .view.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-  /* ===== 通用视图 ===== */
-  .view{display:none;flex:1;flex-direction:column;padding:28px 22px 34px;animation:fadeIn .35s ease;}
-  .view.active{display:flex;}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+  /* ================= 封面 ================= */
+  .cover{min-height:calc(100vh - 56px);min-height:calc(100dvh - 56px);display:flex;flex-direction:column;justify-content:center;padding:44px 0 40px}
+  .orb{position:relative;width:104px;height:104px;margin:0 auto 30px}
+  .orb .ring{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(47,127,193,.25);animation:breathe 5.5s ease-in-out infinite}
+  .orb .ring:nth-child(2){inset:14px;animation-delay:.4s;border-color:rgba(47,127,193,.35)}
+  .orb .core{position:absolute;inset:30px;border-radius:50%;background:linear-gradient(160deg,#8fc4ee,#3f8ac9);box-shadow:0 12px 26px rgba(47,127,193,.28)}
+  @keyframes breathe{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.12);opacity:1}}
 
-  /* ===== 封面页 ===== */
-  .cover{justify-content:center;align-items:center;text-align:center;position:relative;min-height:100vh;}
-  .blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.55;pointer-events:none;}
-  .blob.b1{width:220px;height:220px;background:var(--blue-300);top:-60px;left:-70px;}
-  .blob.b2{width:160px;height:160px;background:var(--blue-100);bottom:12%;right:-50px;}
-  .blob.b3{width:90px;height:90px;background:#C9E6F7;top:30%;right:30%;}
-  .cover-tag{
-    display:inline-flex;align-items:center;gap:6px;
-    background:var(--white);border:1px solid var(--blue-100);
-    color:var(--blue-700);font-size:13px;font-weight:500;
-    padding:7px 16px;border-radius:999px;box-shadow:var(--shadow);
-    margin-bottom:28px;position:relative;z-index:1;
+  .kicker{text-align:center;font-size:12px;letter-spacing:.32em;color:var(--ink-3);margin-bottom:16px}
+  h1.cover-title{
+    font-family:"Noto Serif SC",serif;font-weight:600;
+    font-size:33px;line-height:1.42;letter-spacing:.02em;
+    text-align:center;margin:0 0 10px;color:#173450;
   }
-  .cover-tag .dot{width:7px;height:7px;border-radius:50%;background:var(--blue-500);}
-  .cover h1{
-    font-size:38px;font-weight:900;color:var(--blue-900);
-    letter-spacing:4px;margin-bottom:16px;position:relative;z-index:1;
+  h1.cover-title em{font-style:normal;color:var(--blue)}
+  .cover-sub{text-align:center;color:var(--ink-2);font-size:14.5px;margin:0 auto 30px;max-width:320px}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px}
+  .fact{background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.9);border-radius:16px;padding:14px 6px;text-align:center;backdrop-filter:blur(6px);box-shadow:var(--shadow-s)}
+  .fact b{display:block;font-size:18px;color:#1c4d78;font-weight:600;line-height:1.3}
+  .fact span{font-size:11.5px;color:var(--ink-3);letter-spacing:.06em}
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;border:0;cursor:pointer;font-family:inherit;
+    background:linear-gradient(180deg,#4a94cf,#2b76b8);
+    color:#fff;font-size:16px;font-weight:500;letter-spacing:.04em;
+    padding:17px 20px;border-radius:18px;
+    box-shadow:0 12px 26px rgba(43,118,184,.30);
+    transition:transform .18s ease,box-shadow .18s ease;
   }
-  .cover .sub{
-    font-size:15px;color:var(--ink-soft);max-width:300px;
-    margin-bottom:34px;position:relative;z-index:1;
-  }
-  .cover-cards{display:flex;gap:12px;width:100%;margin-bottom:38px;position:relative;z-index:1;}
-  .cover-card{flex:1;background:var(--white);border-radius:16px;padding:16px 8px;box-shadow:var(--shadow);}
-  .cover-card .num{font-size:20px;font-weight:700;color:var(--blue-700);}
-  .cover-card .label{font-size:12px;color:var(--ink-soft);margin-top:2px;}
-  .btn-primary{
-    border:none;cursor:pointer;font-family:inherit;
-    background:linear-gradient(135deg,var(--blue-500),var(--blue-700));
-    color:#fff;font-size:17px;font-weight:700;letter-spacing:2px;
-    padding:16px 44px;border-radius:999px;box-shadow:0 10px 24px rgba(62,124,177,.35);
-    transition:transform .15s ease,box-shadow .15s ease;position:relative;z-index:1;
-  }
-  .btn-primary:active{transform:scale(.96);}
-  .cover-note{margin-top:22px;font-size:12px;color:var(--ink-soft);position:relative;z-index:1;}
+  .btn:active{transform:translateY(2px) scale(.995);box-shadow:0 6px 14px rgba(43,118,184,.26)}
+  .btn.ghost{background:rgba(255,255,255,.86);color:var(--blue-d);box-shadow:var(--shadow-s);border:1px solid rgba(47,127,193,.18)}
+  .btn:disabled{opacity:.45;box-shadow:none}
+  .cover-note{text-align:center;font-size:11.5px;color:var(--ink-3);margin-top:18px;line-height:1.7}
 
-  /* ===== 测试页 ===== */
-  .quiz-head{margin-bottom:20px;}
-  .quiz-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-  .quiz-meta .step{font-size:13px;color:var(--blue-700);font-weight:500;}
-  .quiz-meta .total{font-size:13px;color:var(--ink-soft);}
-  .progress{height:8px;background:var(--blue-100);border-radius:999px;overflow:hidden;}
-  .progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--blue-300),var(--blue-700));border-radius:999px;transition:width .3s ease;}
-  .question-card{
-    background:var(--white);border-radius:var(--radius);padding:26px 22px;
-    box-shadow:var(--shadow);margin-bottom:22px;
+  /* ================= 测试页 ================= */
+  .quiz-head{padding:26px 0 8px}
+  .bar{height:4px;border-radius:4px;background:rgba(47,127,193,.14);overflow:hidden}
+  .bar i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,#8fc4ee,#2f7fc1);transition:width .38s cubic-bezier(.2,.7,.3,1)}
+  .qmeta{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:12px;color:var(--ink-3);letter-spacing:.04em}
+  .qmeta .tag{background:rgba(255,255,255,.8);border:1px solid rgba(47,127,193,.16);color:var(--blue-d);padding:3px 10px;border-radius:20px}
+  .qnum{font-size:12px;letter-spacing:.1em}
+
+  .qwrap{margin-top:22px}
+  .qidx{font-family:"Noto Serif SC",serif;font-size:44px;font-weight:600;color:#c6dcf1;line-height:.9;margin-bottom:12px}
+  .qtext{font-family:"Noto Serif SC",serif;font-size:21px;line-height:1.55;font-weight:500;color:#183651;margin:0 0 24px}
+
+  .opts{display:flex;flex-direction:column;gap:11px}
+  .opt{
+    display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
+    background:var(--card);border:1px solid rgba(47,127,193,.12);
+    border-radius:16px;padding:16px 16px;cursor:pointer;
+    font-family:inherit;font-size:15px;line-height:1.55;color:var(--ink-2);
+    box-shadow:0 2px 10px rgba(47,127,193,.05);
+    transition:all .2s ease;
   }
-  .question-card .q-index{font-size:12px;color:var(--blue-500);font-weight:500;letter-spacing:1px;margin-bottom:10px;}
-  .question-card .q-text{font-size:19px;font-weight:700;color:var(--ink);line-height:1.6;}
-  .options{display:flex;flex-direction:column;gap:14px;}
-  .option{
-    background:var(--white);border:1.5px solid var(--blue-100);border-radius:18px;
-    padding:17px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;
-    transition:all .18s ease;
+  .opt:active{transform:scale(.985)}
+  .opt .dot{
+    flex:0 0 auto;width:22px;height:22px;border-radius:50%;
+    background:#f2f8fe;border:1px solid #c9dff3;margin-top:1px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:500;color:#6a9dc7;transition:all .2s ease;
   }
-  .option .badge{
-    flex:none;width:30px;height:30px;border-radius:10px;background:var(--blue-50);
-    color:var(--blue-700);font-weight:700;font-size:14px;
+  .opt.sel{border-color:rgba(47,127,193,.55);background:#f4faff;box-shadow:0 8px 20px rgba(47,127,193,.14)}
+  .opt.sel .dot{background:var(--blue);border-color:var(--blue);color:#fff}
+  .opt.sel .txt{color:#16344e}
+
+  .quiz-foot{margin-top:26px;display:flex;gap:10px}
+  .quiz-foot .btn{font-size:14.5px;padding:14px 18px}
+  .tip{text-align:center;font-size:11.5px;color:var(--ink-3);margin-top:16px}
+
+  /* ================= 结果页 ================= */
+  .r-head{padding:34px 0 6px;text-align:center}
+  .r-label{font-size:11.5px;letter-spacing:.3em;color:var(--ink-3);margin-bottom:14px}
+  .type-name{
+    font-family:"Noto Serif SC",serif;font-size:38px;font-weight:600;
+    letter-spacing:.06em;color:#153753;margin:0;line-height:1.2;
+  }
+  .type-tag{font-size:14px;color:var(--ink-2);margin:12px auto 0;max-width:300px}
+  .type-chip{display:inline-block;margin-top:16px;font-size:11.5px;letter-spacing:.12em;color:var(--blue-d);background:rgba(255,255,255,.8);border:1px solid rgba(47,127,193,.2);padding:5px 14px;border-radius:20px}
+
+  .card{
+    background:var(--card);border-radius:var(--r);padding:22px 20px;margin-top:16px;
+    box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.7);
+  }
+  .card h2{
+    font-family:"Noto Serif SC",serif;font-size:16px;font-weight:600;color:#173450;
+    margin:0 0 4px;display:flex;align-items:center;gap:8px;
+  }
+  .card h2::before{content:"";width:3px;height:15px;border-radius:3px;background:linear-gradient(180deg,#8fc4ee,#2f7fc1)}
+  .card .lead{font-size:12.5px;color:var(--ink-3);margin:0 0 18px}
+
+  /* 两维 */
+  .axes{display:flex;flex-direction:column;gap:18px}
+  .ax-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+  .ax-top .nm{font-size:13.5px;color:var(--ink-2);font-weight:500}
+  .ax-top .vl{font-size:12px;color:var(--blue-d);font-weight:600}
+  .ax-bar{height:8px;border-radius:8px;background:var(--blue-x);overflow:hidden}
+  .ax-bar i{display:block;height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,#a9d2f2,#2f7fc1);transition:width .8s cubic-bezier(.2,.7,.3,1)}
+  .ax-desc{font-size:11.5px;color:var(--ink-3);margin-top:7px}
+
+  .quad{position:relative;width:100%;max-width:200px;margin:24px auto 6px;aspect-ratio:1;border-radius:14px;
+    background:linear-gradient(180deg,#f7fbff,#e9f3fd);border:1px solid rgba(47,127,193,.14)}
+  .quad::before,.quad::after{content:"";position:absolute;background:rgba(47,127,193,.18)}
+  .quad::before{left:50%;top:8%;bottom:8%;width:1px}
+  .quad::after{top:50%;left:8%;right:8%;height:1px}
+  .quad .dot{position:absolute;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);
+    background:linear-gradient(160deg,#8fc4ee,#2f7fc1);box-shadow:0 0 0 6px rgba(47,127,193,.16),0 4px 10px rgba(47,127,193,.3);
+    transition:all .7s cubic-bezier(.2,.7,.3,1)}
+  .quad span{position:absolute;font-size:10px;color:var(--ink-3);letter-spacing:.08em}
+  .quad .q1{top:6px;left:50%;transform:translateX(-50%)}
+  .quad .q2{bottom:6px;left:50%;transform:translateX(-50%)}
+  .quad .q3{left:7px;top:50%;transform:translateY(-50%)}
+  .quad .q4{right:7px;top:50%;transform:translateY(-50%)}
+
+  /* 雷达 */
+  .radar-box{display:flex;justify-content:center;margin:4px 0 6px}
+  #radar{width:100%;max-width:320px;height:auto}
+
+  .dims{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+  .dim{}
+  .dim-top{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--ink-2)}
+  .dim-top b{font-size:12.5px;color:var(--blue-d);font-weight:600}
+  .dim-bar{height:5px;border-radius:5px;background:var(--blue-x);overflow:hidden;margin:6px 0 6px}
+  .dim-bar i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,#bfdcf5,#4a94cf);transition:width .8s cubic-bezier(.2,.7,.3,1)}
+  .dim-note{font-size:11.5px;color:var(--ink-3);line-height:1.65}
+
+  /* 选项分析 */
+  .ans{border-top:1px solid var(--line);padding:14px 0}
+  .ans:first-of-type{border-top:0;padding-top:2px}
+  .ans .aq{font-size:11.5px;color:var(--ink-3);letter-spacing:.02em;margin-bottom:5px}
+  .ans .ap{font-size:13.5px;color:#1d3d59;line-height:1.62;margin:0}
+  .ans .ap b{color:var(--blue-d);font-weight:500}
+
+  /* 文本块 */
+  .txt{font-size:14px;line-height:1.85;color:var(--ink-2);margin:0}
+  .list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+  .list li{position:relative;padding-left:18px;font-size:13.5px;line-height:1.72;color:var(--ink-2)}
+  .list li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--blue-l)}
+  .steps{counter-reset:s;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+  .steps li{counter-increment:s;position:relative;padding-left:32px;font-size:13.5px;line-height:1.72;color:var(--ink-2)}
+  .steps li::before{
+    content:counter(s);position:absolute;left:0;top:2px;width:22px;height:22px;border-radius:50%;
+    background:var(--blue-x);color:var(--blue-d);font-size:11.5px;font-weight:600;
     display:flex;align-items:center;justify-content:center;
   }
-  .option .opt-text{font-size:15px;color:var(--ink);}
-  .option.selected{border-color:var(--blue-500);background:var(--blue-50);box-shadow:0 6px 18px rgba(111,168,220,.25);}
-  .option.selected .badge{background:var(--blue-700);color:#fff;}
-  .option:active{transform:scale(.98);}
-  .quiz-footer{display:flex;gap:14px;margin-top:auto;padding-top:20px;}
-  .btn-ghost{
-    flex:none;border:1.5px solid var(--blue-300);background:var(--white);color:var(--blue-700);
-    font-family:inherit;font-size:15px;font-weight:500;padding:14px 22px;border-radius:16px;cursor:pointer;
+  .quote{
+    margin:18px 0 0;padding:16px 18px;border-radius:16px;
+    background:linear-gradient(160deg,#f3f9ff,#e6f1fc);
+    border-left:3px solid var(--blue-l);
+    font-family:"Noto Serif SC",serif;font-size:14.5px;line-height:1.8;color:#1b4368;
   }
-  .btn-ghost:disabled{opacity:.4;cursor:not-allowed;}
-  .btn-next{
-    flex:1;border:none;cursor:pointer;font-family:inherit;
-    background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;
-    font-size:16px;font-weight:700;padding:14px;border-radius:16px;
-  }
-  .btn-next:disabled{opacity:.4;cursor:not-allowed;}
+  .foot{margin-top:26px}
+  .disclaim{text-align:center;font-size:11px;color:var(--ink-3);line-height:1.8;margin-top:22px;padding:0 8px}
 
-  /* ===== 结果页 ===== */
-  .result-head{text-align:center;margin-bottom:18px;}
-  .result-head .tag{font-size:13px;color:var(--blue-700);letter-spacing:1px;}
-  .score-ring{
-    width:150px;height:150px;margin:16px auto;position:relative;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
+  /* ================= 口令验证 ================= */
+  #site{display:none}                 /* 默认隐藏：口令不对，内容不出现 */
+  .gate{min-height:calc(100vh - 56px);min-height:calc(100dvh - 56px);display:flex;flex-direction:column;justify-content:center;padding:40px 0 44px}
+  .gate .orb{width:86px;height:86px;margin-bottom:24px}
+  .gate-card{background:var(--card);border-radius:24px;padding:24px 20px 22px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.75);margin-top:4px}
+  .gate-card label{display:block;font-size:12px;letter-spacing:.16em;color:var(--ink-3);margin-bottom:10px}
+  .field{position:relative}
+  .field input{
+    width:100%;border:1px solid rgba(47,127,193,.18);background:#f7fbff;border-radius:14px;
+    padding:15px 62px 15px 16px;font-size:15px;color:var(--ink);font-family:inherit;outline:none;
+    transition:border-color .2s ease,background .2s ease,box-shadow .2s ease;
   }
-  .score-ring svg{position:absolute;inset:0;transform:rotate(-90deg);}
-  .score-ring .score-num{font-size:36px;font-weight:900;color:var(--blue-900);}
-  .score-ring .score-unit{font-size:12px;color:var(--ink-soft);}
-  .verdict{background:var(--white);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px;}
-  .verdict .v-title{font-size:18px;font-weight:700;color:var(--blue-700);margin-bottom:8px;}
-  .verdict .v-desc{font-size:14px;color:var(--ink-soft);}
-  .chart-wrap{background:var(--white);border-radius:var(--radius);padding:16px 10px;box-shadow:var(--shadow);margin-bottom:20px;}
-  .chart-wrap .chart-title{font-size:15px;font-weight:700;color:var(--ink);padding:6px 10px 0;}
-  #radar{width:100%;height:300px;}
-  .dim-list{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
-  .dim-item{background:var(--white);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);}
-  .dim-item .dim-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-  .dim-item .dim-name{font-size:15px;font-weight:600;}
-  .dim-item .dim-score{font-size:14px;font-weight:700;color:var(--blue-700);}
-  .dim-bar{height:7px;background:var(--blue-100);border-radius:999px;overflow:hidden;}
-  .dim-bar .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--blue-300),var(--blue-700));}
-  .dim-item .dim-desc{font-size:12px;color:var(--ink-soft);margin-top:8px;}
-  .btn-retry{
-    width:100%;border:1.5px solid var(--blue-300);background:var(--white);color:var(--blue-700);
-    font-family:inherit;font-size:16px;font-weight:600;padding:15px;border-radius:16px;cursor:pointer;
+  .field input::placeholder{color:#a9bfd4}
+  .field input:focus{border-color:rgba(47,127,193,.6);background:#fff;box-shadow:0 0 0 3px rgba(47,127,193,.10)}
+  .field input:disabled{opacity:.6}
+  .eye{
+    position:absolute;right:6px;top:50%;transform:translateY(-50%);
+    border:0;background:transparent;cursor:pointer;font-family:inherit;
+    font-size:12px;color:var(--blue-d);padding:8px 10px;border-radius:10px;
   }
-  .disclaimer{margin-top:18px;font-size:12px;color:var(--ink-soft);text-align:center;line-height:1.7;}
+  .eye:active{background:rgba(47,127,193,.08)}
+  .err{font-size:12.5px;color:#c16350;min-height:19px;margin:8px 0 12px;opacity:0;transition:opacity .2s ease}
+  .err.show{opacity:1}
+  .gate-card .btn{font-size:15px;padding:15px 20px}
+  .gate.shake{animation:shake .38s cubic-bezier(.36,.07,.19,.97)}
+  @keyframes shake{
+    10%,90%{transform:translateX(-2px)}
+    20%,80%{transform:translateX(4px)}
+    30%,50%,70%{transform:translateX(-6px)}
+    40%,60%{transform:translateX(6px)}
+  }
+  .gate-foot{text-align:center;font-size:11.5px;color:var(--ink-3);line-height:1.8;margin-top:20px}
 
-  @media (max-width:380px){
-    .cover h1{font-size:32px;letter-spacing:2px;}
-    .question-card .q-text{font-size:17px;}
+  @media (max-width:360px){
+    .app{padding:0 15px 44px}
+    h1.cover-title{font-size:29px}
+    .qtext{font-size:19px}
+    .type-name{font-size:32px}
   }
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- ===== 视图：封面 ===== -->
-  <section id="cover" class="view active cover">
-    <div class="blob b1"></div>
-    <div class="blob b2"></div>
-    <div class="blob b3"></div>
-    <span class="cover-tag"><span class="dot"></span><span>自我探索 · 趣味自评</span></span>
-    <h1>心灵晴雨表</h1>
-    <p class="sub">十五道小题，看看此刻的你，内心是晴空、多云，还是飘着小雨。</p>
-    <div class="cover-cards">
-      <div class="cover-card"><div class="num">15</div><div class="label">道情境题</div></div>
-      <div class="cover-card"><div class="num">6</div><div class="label">个心理维度</div></div>
-      <div class="cover-card"><div class="num">3</div><div class="label">分钟左右</div></div>
+  <!-- ============================================================ 视图：口令 ============================================================ -->
+  <section id="gate">
+    <div class="gate" id="gate-wrap">
+      <div class="orb"><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+      <div class="kicker">PRIVATE ACCESS</div>
+      <h1 class="cover-title">这里需要<em>口令</em></h1>
+      <p class="cover-sub">一个只给受邀者的小测试。<br>输入口令后，门就开了。</p>
+
+      <div class="gate-card">
+        <label for="pwd">访问口令</label>
+        <div class="field">
+          <input id="pwd" type="password" placeholder="请输入口令" autocomplete="off" autocapitalize="off" spellcheck="false" />
+          <button class="eye" id="btn-eye" type="button">显示</button>
+        </div>
+        <p class="err" id="err"></p>
+        <button class="btn" id="btn-enter">进入 →</button>
+      </div>
+
+      <p class="gate-foot">口令由页面主人提供<br>如需访问，请向对方索取</p>
     </div>
-    <button class="btn-primary" id="startBtn">开始测试</button>
-    <p class="cover-note">答案没有对错，凭第一直觉选择就好</p>
   </section>
 
-  <!-- ===== 视图：测试 ===== -->
-  <section id="quiz" class="view">
+  <!-- ============================================================ 内容区（通过口令后才显示） ============================================================ -->
+  <div id="site">
+
+  <!-- ============================================================ 视图：封面 ============================================================ -->
+  <section class="view on" id="v-cover">
+    <div class="cover">
+      <div class="orb"><div class="ring"></div><div class="ring"></div><div class="core"></div></div>
+      <div class="kicker">PERSONALITY &amp; RELATIONSHIP</div>
+      <h1 class="cover-title">你在关系里<br>是什么<em>形状</em></h1>
+      <p class="cover-sub">15 个问题，照见你的底色、你的关系剧本，<br>以及你此刻正站在哪里。</p>
+
+      <div class="facts">
+        <div class="fact"><b>15</b><span>道情境题</span></div>
+        <div class="fact"><b>6</b><span>个人格维度</span></div>
+        <div class="fact"><b>3</b><span>分钟完成</span></div>
+      </div>
+
+      <button class="btn" id="btn-start">开始测试 <span>→</span></button>
+      <p class="cover-note">没有标准答案。请选最像你本能反应的那一个，<br>而不是"我应该成为"的那一个。</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ 视图：测试 ============================================================ -->
+  <section class="view" id="v-quiz">
     <div class="quiz-head">
-      <div class="quiz-meta">
-        <span class="step" id="stepLabel">第 1 / 15 题</span>
-        <span class="total">凭直觉作答</span>
+      <div class="bar"><i id="prog"></i></div>
+      <div class="qmeta">
+        <span class="tag" id="stage">人格底色</span>
+        <span class="qnum" id="qnum">01 / 15</span>
       </div>
-      <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
     </div>
-    <div class="question-card">
-      <div class="q-index" id="qIndex">QUESTION 01</div>
-      <div class="q-text" id="qText"></div>
+
+    <div class="qwrap">
+      <div class="qidx" id="qidx">01</div>
+      <h2 class="qtext" id="qtext">题目</h2>
+      <div class="opts" id="opts"></div>
     </div>
-    <div class="options" id="options"></div>
-    <div class="quiz-footer">
-      <button class="btn-ghost" id="prevBtn">上一题</button>
-      <button class="btn-next" id="nextBtn" disabled>下一题</button>
+
+    <div class="quiz-foot">
+      <button class="btn ghost" id="btn-prev" style="flex:0 0 38%">← 上一题</button>
+      <button class="btn" id="btn-next" style="flex:1">下一题 →</button>
     </div>
+    <p class="tip">愿意的话，慢一点回答也没关系</p>
   </section>
 
-  <!-- ===== 视图：结果 ===== -->
-  <section id="result" class="view">
-    <div class="result-head">
-      <span class="tag">你的内心天气</span>
-      <div class="score-ring">
-        <svg viewBox="0 0 150 150">
-          <circle cx="75" cy="75" r="64" fill="none" stroke="#DCEEF9" stroke-width="11"/>
-          <circle id="ringFg" cx="75" cy="75" r="64" fill="none" stroke="#3E7CB1" stroke-width="11"
-            stroke-linecap="round" stroke-dasharray="402" stroke-dashoffset="402"/>
-        </svg>
-        <div class="score-num" id="totalScore">0</div>
-        <div class="score-unit">综合状态分</div>
+  <!-- ============================================================ 视图：结果 ============================================================ -->
+  <section class="view" id="v-result">
+    <div class="r-head">
+      <div class="r-label">YOUR SHAPE</div>
+      <h1 class="type-name" id="type-name">—</h1>
+      <p class="type-tag" id="type-tag">—</p>
+      <div class="type-chip" id="type-chip">—</div>
+    </div>
+
+    <!-- 两维评分 -->
+    <div class="card">
+      <h2>两维评分</h2>
+      <p class="lead">横向看你要多近，纵向看你说多少；分数为百分位。</p>
+      <div class="axes">
+        <div class="ax">
+          <div class="ax-top"><span class="nm">亲密需求</span><span class="vl" id="x-val">—</span></div>
+          <div class="ax-bar"><i id="x-bar"></i></div>
+          <div class="ax-desc" id="x-desc">—</div>
+        </div>
+        <div class="ax">
+          <div class="ax-top"><span class="nm">情绪外显</span><span class="vl" id="y-val">—</span></div>
+          <div class="ax-bar"><i id="y-bar"></i></div>
+          <div class="ax-desc" id="y-desc">—</div>
+        </div>
+      </div>
+      <div class="quad">
+        <span class="q1">外显</span><span class="q2">内敛</span><span class="q3">独立</span><span class="q4">靠近</span>
+        <div class="dot" id="quad-dot" style="left:50%;top:50%"></div>
       </div>
     </div>
-    <div class="verdict">
-      <div class="v-title" id="verdictTitle"></div>
-      <div class="v-desc" id="verdictDesc"></div>
+
+    <!-- 雷达图 -->
+    <div class="card">
+      <h2>六维人格画像</h2>
+      <p class="lead">越靠外，这一维越是你关系里的常用语言（分数为百分位）。</p>
+      <div class="radar-box"><svg id="radar" viewBox="0 0 320 340" aria-label="六维雷达图"></svg></div>
+      <div class="dims" id="dims"></div>
     </div>
-    <div class="chart-wrap">
-      <div class="chart-title">六维内心雷达图</div>
-      <div id="radar"></div>
+
+    <!-- 关系剧本 -->
+    <div class="card">
+      <h2>你的关系剧本</h2>
+      <p class="lead">你总是在不自知地，重复同一段开头。</p>
+      <p class="txt" id="script"></p>
+      <blockquote class="quote" id="quote"></blockquote>
     </div>
-    <div class="dim-list" id="dimList"></div>
-    <button class="btn-retry" id="retryBtn">重新测一次</button>
-    <p class="disclaimer">本测试为趣味自评工具，结果仅供自我觉察参考，<br>不能替代专业心理诊断；若长期情绪低落，请寻求专业帮助。</p>
+
+    <!-- 优势 / 风险 -->
+    <div class="card">
+      <h2>优势与风险</h2>
+      <p class="lead">同一枚硬币的两面。</p>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <div style="font-size:12px;letter-spacing:.16em;color:var(--blue-d);margin-bottom:8px">优势 · STRENGTH</div>
+          <ul class="list" id="pros"></ul>
+        </div>
+        <div style="height:1px;background:var(--line);margin:4px 0"></div>
+        <div>
+          <div style="font-size:12px;letter-spacing:.16em;color:#9a7a58;margin-bottom:8px">风险 · RISK</div>
+          <ul class="list" id="risks"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 沟通方式 -->
+    <div class="card">
+      <h2>适合你的沟通方式</h2>
+      <p class="lead">不是变得不像自己，而是让话能被接住。</p>
+      <ul class="list" id="talk"></ul>
+    </div>
+
+    <!-- 冲突修复 -->
+    <div class="card">
+      <h2>冲突修复四步</h2>
+      <p class="lead">下次吵到卡住时，按顺序走一遍。</p>
+      <ol class="steps" id="fix"></ol>
+    </div>
+
+    <!-- 成长建议 -->
+    <div class="card">
+      <h2>成长建议</h2>
+      <p class="lead">只改一件小事，比改整个人容易。</p>
+      <p class="txt" id="grow"></p>
+    </div>
+
+    <div class="foot">
+      <button class="btn ghost" id="btn-again">重新测一次</button>
+    </div>
+    <p class="disclaim">本测试基于自我报告，用于趣味觉察与自我对话，<br>不构成任何心理诊断或专业建议。</p>
   </section>
+
+  </div><!-- /#site -->
 
 </div>
 
+<!-- 口令配置：密码写在同目录的 config.js 里，改密码只改它 -->
+<script src="config.js"></script>
+
 <script>
-/* ================= 数据 ================= */
-const DIMENSIONS = [
-  { key:"emotion", name:"情绪状态", desc:"情绪是否平稳，能否觉察并调节感受" },
-  { key:"stress",  name:"压力耐受", desc:"面对突发与挫折时，恢复的速度与韧性" },
-  { key:"social",  name:"人际联结", desc:"被理解、被支持，以及与人靠近的安全感" },
-  { key:"energy",  name:"精力睡眠", desc:"休息是否充足，身体与精神的活力储备" },
-  { key:"self",    name:"自我接纳", desc:"对自己的包容度，看见优点也容纳不完美" },
-  { key:"meaning", name:"意义方向", desc:"对生活的掌控感，以及前行的理由与温度" }
+/* ============================================================
+   口令来源：config.js 中的 SITE_PASSWORD
+   HTML 里不保存密码；config.js 缺失或为空时一律不放行
+   ============================================================ */
+const ACCESS_CONFIG = {
+  remember : true,          // 本次会话内解锁过就不再重复询问
+  maxTry   : 5,             // 连续输错的次数上限
+  cooldown : 3000           // 达到上限后需要等待的毫秒数
+};
+const PASS = (typeof SITE_PASSWORD !== 'undefined' && SITE_PASSWORD !== null)
+           ? String(SITE_PASSWORD)
+           : '';
+
+/* ============================================================
+   数据层
+   ============================================================ */
+
+const DIMS = [
+  {k:'sec', n:'安全感'},
+  {k:'emp', n:'共情力'},
+  {k:'bnd', n:'边界感'},
+  {k:'act', n:'主动性'},
+  {k:'stb', n:'稳定度'},
+  {k:'exp', n:'表达力'}
 ];
 
-const QUESTIONS = [
-  { dim:"emotion", text:"清晨醒来，一想到今天要面对的人和事，我的第一反应通常是——",
-    options:[
-      { label:"A", text:"心里一沉，实在提不起劲", score:1 },
-      { label:"B", text:"有些烦躁，但还能勉强应付", score:2 },
-      { label:"C", text:"波澜不惊，按部就班就好", score:3 },
-      { label:"D", text:"平静从容，甚至有点小期待", score:4 }
-    ]},
-  { dim:"stress", text:"一件毫无准备的突发任务砸过来，我的内心更接近哪种状态？",
-    options:[
-      { label:"A", text:"大脑一片空白，只想立刻逃开", score:1 },
-      { label:"B", text:"焦虑很久，反复在心里内耗", score:2 },
-      { label:"C", text:"先接住情绪，再慢慢拆解问题", score:3 },
-      { label:"D", text:"当作一次挑战，着手去做就好", score:4 }
-    ]},
-  { dim:"social", text:"最近一周，我是否有过被人真正理解、可以卸下防备的对话？",
-    options:[
-      { label:"A", text:"完全没有，习惯了独自扛着", score:1 },
-      { label:"B", text:"很少，也懒得主动说起", score:2 },
-      { label:"C", text:"有一两个可以说真心话的人", score:3 },
-      { label:"D", text:"身边围绕着让我安心的关系", score:4 }
-    ]},
-  { dim:"energy", text:"过去一个月，我的睡眠和白天精力大致是——",
-    options:[
-      { label:"A", text:"入睡困难或易醒，白天疲惫不堪", score:1 },
-      { label:"B", text:"时好时坏，靠咖啡硬撑着", score:2 },
-      { label:"C", text:"基本够用，偶尔感到倦怠", score:3 },
-      { label:"D", text:"睡得安稳，白天有充沛活力", score:4 }
-    ]},
-  { dim:"self", text:"站在镜子前打量自己，我对自己的整体感受更接近——",
-    options:[
-      { label:"A", text:"常常挑剔自己，这也不好那也不行", score:1 },
-      { label:"B", text:"只在被人比较时才否定自己", score:2 },
-      { label:"C", text:"接纳缺点，也看得见自己的优点", score:3 },
-      { label:"D", text:"喜欢现在的自己，包括那些不完美", score:4 }
-    ]},
-  { dim:"meaning", text:"我是否清楚自己当下生活的方向，知道自己在为什么而努力？",
-    options:[
-      { label:"A", text:"很迷茫，像在随波逐流", score:1 },
-      { label:"B", text:"有目标，但常觉得没什么意思", score:2 },
-      { label:"C", text:"大致清楚，偶尔会自我怀疑", score:3 },
-      { label:"D", text:"方向明确，愿意为之投入热情", score:4 }
-    ]},
-  { dim:"emotion", text:"坏情绪突然袭来时，我通常会——",
-    options:[
-      { label:"A", text:"被它淹没，长时间走不出来", score:1 },
-      { label:"B", text:"压抑下去，假装什么事都没有", score:2 },
-      { label:"C", text:"承认它存在，慢慢让它过去", score:3 },
-      { label:"D", text:"觉察情绪，并主动把它调平稳", score:4 }
-    ]},
-  { dim:"stress", text:"回想最近一次挫折，我花了多久重新站起来？",
-    options:[
-      { label:"A", text:"很久，至今还困在那片阴影里", score:1 },
-      { label:"B", text:"挺久，主要靠时间慢慢熬", score:2 },
-      { label:"C", text:"几天到一周左右就能缓过来", score:3 },
-      { label:"D", text:"很快，复盘过后便继续往前走", score:4 }
-    ]},
-  { dim:"social", text:"身处人群之中，我通常的状态是——",
-    options:[
-      { label:"A", text:"感到疏离，仿佛融不进去", score:1 },
-      { label:"B", text:"客气寒暄，始终保持距离", score:2 },
-      { label:"C", text:"能自然地交流与互动", score:3 },
-      { label:"D", text:"放松自在，愿意主动去联结", score:4 }
-    ]},
-  { dim:"energy", text:"属于自己的闲暇时间，我大多用来——",
-    options:[
-      { label:"A", text:"瘫着刷手机，却越刷越累", score:1 },
-      { label:"B", text:"应付琐事，几乎没有喘息空间", score:2 },
-      { label:"C", text:"做点喜欢的事，慢慢回血", score:3 },
-      { label:"D", text:"有自己的节奏，张弛有度", score:4 }
-    ]},
-  { dim:"self", text:"别人的一句批评，通常会在我心里停留多久？",
-    options:[
-      { label:"A", text:"反复回味，连着自己一起否定", score:1 },
-      { label:"B", text:"难受一阵，久久难以释怀", score:2 },
-      { label:"C", text:"想想有无道理，然后放下", score:3 },
-      { label:"D", text:"对事不对人，很快不往心里去", score:4 }
-    ]},
-  { dim:"self", text:"和过去的自己相比，我觉得现在的我——",
-    options:[
-      { label:"A", text:"越来越糟糕，常常力不从心", score:1 },
-      { label:"B", text:"停滞不前，一直在原地打转", score:2 },
-      { label:"C", text:"在慢慢变成想要的样子", score:3 },
-      { label:"D", text:"能清楚看见自己的成长与力量", score:4 }
-    ]},
-  { dim:"meaning", text:"若把今天从生命里删掉重来，我会觉得这段时间——",
-    options:[
-      { label:"A", text:"空虚虚度，什么也没留下", score:1 },
-      { label:"B", text:"平淡如水，没什么印象", score:2 },
-      { label:"C", text:"有一些值得回味的片段", score:3 },
-      { label:"D", text:"充实满足，觉得活着真好", score:4 }
-    ]},
-  { dim:"social", text:"遇到难处时，开口向别人求助的可能性有多大？",
-    options:[
-      { label:"A", text:"几乎不会，怕被拒绝也怕麻烦人", score:1 },
-      { label:"B", text:"犹豫很久，最后多半自己硬扛", score:2 },
-      { label:"C", text:"必要时会找信任的人聊聊", score:3 },
-      { label:"D", text:"坦然开口，也愿意成为别人的依靠", score:4 }
-    ]},
-  { dim:"emotion", text:"我能否分辨出自己此刻正在经历哪一种情绪？",
-    options:[
-      { label:"A", text:"常常只觉得难受，说不清是什么", score:1 },
-      { label:"B", text:"大概知道，但感觉很模糊", score:2 },
-      { label:"C", text:"能觉察到自己的情绪变化", score:3 },
-      { label:"D", text:"清晰命名情绪，并理解它的来由", score:4 }
-    ]}
+const DIM_NOTE = {
+  sec:{hi:'你的内在底盘是稳的，不太靠外界确认来维持自己。',lo:'你的安全感受外界波动影响较大，需要主动建立稳定的自我确认。'},
+  emp:{hi:'你能读到别人没说出口的部分，这是天赋，也得设闸。',lo:'你更依赖明确表达，好处是不内耗，代价是容易错过暗示。'},
+  bnd:{hi:'你知道哪里是自己的地界，不容易被裹着走。',lo:'你的边界偏软，容易被别人的情绪占位。'},
+  act:{hi:'你愿意先动，关系里不太会僵在原地。',lo:'你习惯等，等着等着，温度就凉了。'},
+  stb:{hi:'你的情绪起伏可控，是关系里的那根定海针。',lo:'你的状态波动偏大，比起"更努力"，你更需要节奏管理。'},
+  exp:{hi:'你能把感受说成话，这是稀缺能力。',lo:'你咽回去的话，比说出口的多太多。'}
+};
+
+/* 15 题：分三段 —— 人格底色(1-5)、关系模式(6-10)、当前状态(11-15)
+   每个选项 w 为六维加权(0-3)，x 为亲密需求，y 为情绪外显 */
+const QS = [
+  {stage:'人格底色', q:'深夜三点你突然醒来，脑子里冒出的第一个念头，通常是：', o:[
+    {t:'明天那件事，我是不是还没准备好', a:'你的默认反应是「负责」，连睡眠都在替明天加班。', w:{sec:0,emp:1,bnd:2,act:2,stb:0,exp:1}, x:1,y:1},
+    {t:'白天某句话是不是说错了，他会不会多想', a:'你把自己放在关系里最敏感的那根弦上，别人的一个语气，你能复盘一整夜。', w:{sec:0,emp:3,bnd:1,act:1,stb:1,exp:2}, x:3,y:2},
+    {t:'一片空白，然后觉得此刻这么安静，也挺好', a:'你对世界没有敌意。能空下来的人，内里通常是安全的。', w:{sec:3,emp:1,bnd:3,act:1,stb:3,exp:1}, x:0,y:1},
+    {t:'某个很久没联系的人，不知道他现在怎么样', a:'你心里存着很多人，连已经失联的，也还在名单上。', w:{sec:1,emp:3,bnd:2,act:2,stb:2,exp:2}, x:3,y:1}
+  ]},
+
+  {stage:'人格底色', q:'如果把你的人生拍成一部电影，你希望它是什么类型：', o:[
+    {t:'节奏紧凑的类型片，每一帧都有用', a:'你希望人生「有效」，不太允许自己虚度。', w:{sec:1,emp:1,bnd:2,act:3,stb:3,exp:2}, x:1,y:2},
+    {t:'慢慢流动的文艺片，留白比台词重要', a:'你把留白当成内容。节奏感，是你身上最贵的东西。', w:{sec:2,emp:2,bnd:3,act:1,stb:2,exp:1}, x:1,y:1},
+    {t:'一部群像剧，重点是人和人怎么彼此照亮', a:'你的意义感长在关系里——人怎么照亮彼此，是你最在意的那条线。', w:{sec:2,emp:3,bnd:1,act:2,stb:1,exp:3}, x:3,y:3},
+    {t:'一部纪录片，不修饰，包括不体面的部分', a:'你更愿意要真实，哪怕它不好看。', w:{sec:2,emp:2,bnd:3,act:1,stb:3,exp:2}, x:1,y:2}
+  ]},
+
+  {stage:'人格底色', q:'别人形容你时，你最希望听到哪个词：', o:[
+    {t:'可靠', a:'你想被信任。可靠，是你给自己定的最低标准。', w:{sec:2,emp:2,bnd:3,act:2,stb:3,exp:1}, x:1,y:1},
+    {t:'有趣', a:'你怕无趣，胜过怕出错。', w:{sec:2,emp:1,bnd:2,act:3,stb:1,exp:3}, x:1,y:3},
+    {t:'通透', a:'你想活得明白，不愿被情绪和话术糊住。', w:{sec:3,emp:2,bnd:3,act:1,stb:3,exp:1}, x:0,y:1},
+    {t:'温柔', a:'你想要的其实是被允许柔软——那是你最少给别人的东西。', w:{sec:1,emp:3,bnd:2,act:1,stb:2,exp:2}, x:2,y:2}
+  ]},
+
+  {stage:'人格底色', q:'你更害怕哪一种「失去」：', o:[
+    {t:'失去掌控感，事情开始脱轨', a:'失控比孤独更让你难受。你习惯用掌控，来换安全。', w:{sec:0,emp:1,bnd:3,act:3,stb:2,exp:1}, x:0,y:1},
+    {t:'失去「被需要」的那个位置', a:'你的价值感挂在被需要上，所以你常常不肯先走。', w:{sec:0,emp:2,bnd:0,act:2,stb:1,exp:3}, x:3,y:3},
+    {t:'失去对自己的诚实', a:'你最不能接受的是自欺，哪怕真相难看。', w:{sec:3,emp:2,bnd:3,act:1,stb:3,exp:2}, x:1,y:2},
+    {t:'失去对世界的兴趣', a:'你怕的不是累，是一切都不再让你心动。', w:{sec:1,emp:2,bnd:2,act:1,stb:1,exp:2}, x:1,y:2}
+  ]},
+
+  {stage:'人格底色', q:'一个人待着的周末，你最常做的事是：', o:[
+    {t:'列清单，把积压的事一件件清掉', a:'你用清单对抗失控——连休息，都要有点产出。', w:{sec:1,emp:1,bnd:3,act:3,stb:3,exp:1}, x:0,y:1},
+    {t:'反复刷手机，其实在等一条消息', a:'你的独处里有一半时间在等一个人。等待，也是一种陪伴。', w:{sec:0,emp:2,bnd:0,act:1,stb:0,exp:1}, x:3,y:1},
+    {t:'做一件没什么用、但自己很喜欢的事', a:'你还留着「没用但喜欢」的能力，这是很多成年人弄丢的东西。', w:{sec:3,emp:2,bnd:3,act:1,stb:2,exp:2}, x:0,y:2},
+    {t:'睡到自然醒，然后躺着开始想事情', a:'你需要先放空，才能重新上线。', w:{sec:2,emp:2,bnd:2,act:0,stb:1,exp:1}, x:1,y:1}
+  ]},
+
+  {stage:'关系模式', q:'在一段关系里，你最先察觉到的变化是：', o:[
+    {t:'对方的情绪温度变了', a:'你对温度极敏感。关系里那点小小的降温，你总是先知道。', w:{sec:1,emp:3,bnd:1,act:2,stb:1,exp:2}, x:2,y:2},
+    {t:'自己开始变得不像自己', a:'你最先警惕的是自己在变形——那是你被消耗的信号。', w:{sec:0,emp:3,bnd:1,act:1,stb:1,exp:1}, x:3,y:1},
+    {t:'两个人之间的话变少了', a:'你把「话变少」当成关系的第一张体检报告。', w:{sec:1,emp:2,bnd:2,act:2,stb:2,exp:1}, x:2,y:1},
+    {t:'未来的形状开始变模糊了', a:'你在意的是未来。不确定会让你先退半步。', w:{sec:0,emp:1,bnd:2,act:1,stb:0,exp:1}, x:1,y:1}
+  ]},
+
+  {stage:'关系模式', q:'当对方沉默了很久，你的第一反应是：', o:[
+    {t:'追问，直到弄清楚到底发生了什么', a:'你不能忍受悬置。追问，是你夺回确定的方式。', w:{sec:0,emp:2,bnd:0,act:3,stb:1,exp:3}, x:3,y:3},
+    {t:'陪着他，不说话，等他自己开口', a:'你相信沉默有它自己的语速，而你愿意等。', w:{sec:2,emp:3,bnd:2,act:0,stb:3,exp:1}, x:2,y:1},
+    {t:'先退一步，给彼此空间', a:'你尊重边界，也保护自己不被卷进去。', w:{sec:2,emp:2,bnd:3,act:1,stb:2,exp:1}, x:0,y:1},
+    {t:'开始在心里预演最坏的结果', a:'在沉默里，你先跟自己对峙，往往比对方更累。', w:{sec:0,emp:2,bnd:1,act:1,stb:0,exp:1}, x:2,y:2}
+  ]},
+
+  {stage:'关系模式', q:'你更容易因为什么而心软：', o:[
+    {t:'对方在你面前示弱', a:'示弱会让你卸甲。你容易被「被需要」收买。', w:{sec:1,emp:2,bnd:1,act:2,stb:1,exp:2}, x:2,y:1},
+    {t:'对方记得你随口说过的一件小事', a:'你在意的从来不是贵重，而是「我说过的话你居然记得」。', w:{sec:2,emp:3,bnd:2,act:2,stb:2,exp:2}, x:2,y:3},
+    {t:'对方在你面前不用装', a:'让你心软的是对方的坦然，那是一种很罕见的干净。', w:{sec:3,emp:3,bnd:2,act:1,stb:3,exp:2}, x:1,y:2},
+    {t:'对方为你做了一件很笨拙的事', a:'笨拙比熟练更打动你，因为笨拙不会演。', w:{sec:2,emp:3,bnd:2,act:1,stb:2,exp:2}, x:3,y:1}
+  ]},
+
+  {stage:'关系模式', q:'关系里出现一个怎么谈都解决不了的矛盾，你会：', o:[
+    {t:'反复谈，谈到有共识为止', a:'你相信一切都能谈，谈到共识才算结束。', w:{sec:0,emp:2,bnd:1,act:3,stb:1,exp:3}, x:2,y:3},
+    {t:'接受它，绕开它，继续过日子', a:'你能接受「有些矛盾就是背景音」，这是成熟，也是妥协。', w:{sec:2,emp:2,bnd:2,act:1,stb:3,exp:1}, x:1,y:1},
+    {t:'冷静评估，算清楚还值不值得继续', a:'你会冷静算一笔账，包括自己的消耗。', w:{sec:2,emp:1,bnd:3,act:2,stb:2,exp:1}, x:0,y:1},
+    {t:'先自己消化，不把压力给到对方', a:'你把消化留给自己，久了会变成一本沉默的账。', w:{sec:1,emp:2,bnd:2,act:0,stb:2,exp:0}, x:1,y:0}
+  ]},
+
+  {stage:'关系模式', q:'你理想中的亲密，更接近哪一种：', o:[
+    {t:'两个人都能随时说真话', a:'你要的是透明，哪怕真话有点扎。', w:{sec:2,emp:2,bnd:1,act:2,stb:1,exp:3}, x:2,y:3},
+    {t:'各自独立，需要的时候一定在', a:'你要的是不粘连的亲密。独立，是你的底线。', w:{sec:3,emp:2,bnd:3,act:1,stb:3,exp:1}, x:0,y:1},
+    {t:'一起把日子过成有细节的样子', a:'你要的是可触摸的日常——细节，就是你的情话。', w:{sec:2,emp:3,bnd:2,act:2,stb:2,exp:2}, x:2,y:2},
+    {t:'一种不需要解释的默契', a:'你要的是不必解释，那是你对「懂」的最高想象。', w:{sec:3,emp:2,bnd:2,act:0,stb:2,exp:0}, x:1,y:0}
+  ]},
+
+  {stage:'当前状态', q:'最近一个月，你笑出声的次数：', o:[
+    {t:'比记忆里少了', a:'你的笑变少了——别急着把它解释成「成熟」。', w:{sec:0,emp:2,bnd:1,act:1,stb:0,exp:1}, x:1,y:1},
+    {t:'差不多，很平常', a:'你的生活稳定，情绪也稳定，这已经是很多人求不来的。', w:{sec:2,emp:1,bnd:2,act:2,stb:2,exp:1}, x:1,y:1},
+    {t:'挺多的，容易被小事逗到', a:'你还容易被小事打动，这是很贵的能力。', w:{sec:3,emp:2,bnd:3,act:2,stb:3,exp:2}, x:1,y:2},
+    {t:'没注意，好像从没算过', a:'你连自己的情绪都没记过账，可能很久没停下来看看自己了。', w:{sec:2,emp:2,bnd:2,act:0,stb:2,exp:1}, x:0,y:0}
+  ]},
+
+  {stage:'当前状态', q:'如果现在能给生活按下一周的暂停键，你最想做的是：', o:[
+    {t:'什么都不做，睡到自然醒', a:'你缺的是休息，不是方法。', w:{sec:2,emp:2,bnd:3,act:0,stb:1,exp:1}, x:0,y:0},
+    {t:'去一个没人认识我的地方', a:'你想暂时离开所有认识你的人——说明「被看见」这件事正在消耗你。', w:{sec:1,emp:2,bnd:3,act:2,stb:1,exp:1}, x:0,y:1},
+    {t:'把一直想做却没开始的那件事，真正开始', a:'你心里有一件一直没开始的事，它在提醒你：你还有别的可能。', w:{sec:2,emp:1,bnd:3,act:3,stb:2,exp:1}, x:1,y:1},
+    {t:'和某个人，好好聊一次', a:'你真正需要的，是一次被认真听见的对话。', w:{sec:2,emp:3,bnd:1,act:3,stb:2,exp:2}, x:3,y:2}
+  ]},
+
+  {stage:'当前状态', q:'你现在的疲惫，更像哪一种：', o:[
+    {t:'事情太多，身体跟不上', a:'你的累在身体这一层。睡眠和节奏，要排在事情前面。', w:{sec:1,emp:1,bnd:2,act:3,stb:0,exp:1}, x:1,y:1},
+    {t:'心里有事，但说不出口', a:'你的累是话堵住的累。堵住的部分，最后都会变成情绪。', w:{sec:0,emp:3,bnd:1,act:1,stb:0,exp:1}, x:2,y:0},
+    {t:'一切正常，但没什么期待', a:'这不是累，是失速——一切正常，可没有盼头。', w:{sec:0,emp:2,bnd:2,act:1,stb:1,exp:1}, x:1,y:1},
+    {t:'不太累，只是有点空', a:'你在低电量状态。不是病，是空。', w:{sec:2,emp:2,bnd:2,act:2,stb:2,exp:1}, x:1,y:1}
+  ]},
+
+  {stage:'当前状态', q:'最近一次有人认真问你「你还好吗」，你的回答是：', o:[
+    {t:'说「还好」，然后把话题转到对方身上', a:'你用「还好」保护别人，也保护自己不被追问。', w:{sec:1,emp:2,bnd:2,act:1,stb:1,exp:0}, x:1,y:0},
+    {t:'说了真话，说完有点后悔', a:'你敢说真话，但说完会后悔——因为暴露让你不安。', w:{sec:0,emp:2,bnd:0,act:2,stb:0,exp:3}, x:2,y:3},
+    {t:'愣了一下，才发现自己没准备答案', a:'你愣住，是因为真的没人这么问过你——包括你自己。', w:{sec:1,emp:3,bnd:1,act:1,stb:1,exp:1}, x:2,y:0},
+    {t:'笑着说「挺好的」，而且心里真的觉得还行', a:'你的好是真的，不是撑出来的。这是很难得的状态。', w:{sec:3,emp:2,bnd:3,act:2,stb:3,exp:2}, x:1,y:0}
+  ]},
+
+  {stage:'当前状态', q:'如果今晚要给自己写一句话放进抽屉，你会写：', o:[
+    {t:'「再撑一下，很快就过去了」', a:'你还在硬撑，也还相信会过去。', w:{sec:1,emp:1,bnd:2,act:3,stb:0,exp:2}, x:1,y:1},
+    {t:'「你已经做得比自己以为的好」', a:'你在练习对自己温柔。这件事，你做得比想象中好。', w:{sec:3,emp:3,bnd:3,act:1,stb:3,exp:1}, x:1,y:0},
+    {t:'「别再为不值得的人消耗了」', a:'你正在清理消耗——说明你开始给自己定价了。', w:{sec:2,emp:2,bnd:3,act:2,stb:2,exp:1}, x:0,y:1},
+    {t:'「慢一点，也没关系」', a:'你在允许自己慢下来。这是很成熟的自救。', w:{sec:3,emp:2,bnd:3,act:1,stb:2,exp:1}, x:0,y:0}
+  ]}
 ];
 
-/* ================= 状态 ================= */
-const state = { current:0, answers:new Array(QUESTIONS.length).fill(null) };
+/* 九宫格人格类型 */
+const TYPES = {
+  'high|high':{name:'燎原型', tag:'你先点火，也最先被烫到。', chip:'热情 · 直给 · 易过度投入',
+    script:'你习惯先交出全部诚意：先说喜欢、先低头、先发那条多余的消息。你不太怕丢脸，你怕的是「没有回应」。所以你的关系常常开始得很快，然后在你一个人的深夜里被反复复盘。',
+    quote:'你不是太热烈，你只是把「确认」当成了氧气。',
+    pros:['热度真实，能把停滞的关系推到下一步','情绪诚实，对方不必猜你','修复意愿强，你很少让关系真的冷掉'],
+    risks:['容易把「对方慢」读成「对方不爱」','透支自己后突然冷掉，让对方措手不及','急着要答案，反而压掉了关系自然生长的空间'],
+    talk:['把「你为什么不说」换成「我需要的是一句确认，不是一场辩论」','提需求时给具体动作：今晚十点，你能给我打个电话吗','情绪上头时先说事实，再说感受，最后说请求——顺序别反'],
+    fix:['先降温：24 小时内不追问、不解释，只记录自己真实的感受','只提一个请求：把「你到底怎么想」收成一件可执行的小事','说出感受而非判词：用「我很慌」代替「你不在乎我」','约定复盘：48 小时后一起看这件事，而不是当场要结论'],
+    grow:'把热度分一半给自己。你不需要一直烧着，才证明自己爱得真。'},
 
+  'high|mid':{name:'潮汐型', tag:'你的靠近有涨落，而且都很自然。', chip:'弹性 · 有节奏 · 偶尔忽冷忽热',
+    script:'你白天可以一个人把事情做完，夜里却想有人抱住你。你不矛盾，你只是有节奏。你的关系常常是「平时很稳，偶尔很浓」。对方如果只看到你独立的那一面，就会误以为你并不需要他。',
+    quote:'你像潮水，从来不是忽冷忽热，只是有自己的月相。',
+    pros:['弹性好，能独立也能亲密','情绪有出口，不至于积成暗礁','对关系有耐心，不急于定义'],
+    risks:['涨落幅度大时，对方会误读成忽冷忽热','低谷期容易自我封闭，还用「没事」把事情盖过去'],
+    talk:['提前打招呼比事后解释有效：「这两天我会安静一点，不是对你，是我在退潮」','把节奏说出来：你需要多久、需要什么、什么时候回来','涨潮时不要一次性倾倒全部情绪，留一点给下一次'],
+    fix:['先承认节奏的存在，不把低谷说成「问题」','把「潮汐表」告诉对方：大概几天、需要什么','低谷期只保留一个最小的连接动作，比如一句晚安','复盘时区分「我需要空间」和「我在躲你」'],
+    grow:'让节奏被看见。没被理解的温柔，等于没有给出去。'},
+
+  'high|low':{name:'深海型', tag:'水面很静，深处全是暗流。', chip:'深情 · 内敛 · 不擅索取',
+    script:'你想要的很深，但你说出口的很浅。你把「我需要你」翻译成「都行」，把「我难过」翻译成「没事」。你不是不会表达，你是不敢用一次表达，去换一个可能拒绝你的结果。',
+    quote:'你不是没有声音，你只是把声音都放在了水面以下。',
+    pros:['稳定、有承载力，是很多人愿意靠的那种人','不轻易承诺，但承诺了就算数','情绪不轻易外溢，是混乱里的锚'],
+    risks:['沉默容易被读成冷漠','情绪长期内循环，会在某天突然决堤','你不说，对方就永远学不会怎么爱你'],
+    talk:['用「我以前不太说，但现在想试试」开头，比直接说需求更容易被接住','说一半也可以，只要那一半是真的','把「都行」换成「我更想要 A，但 B 我也可以」'],
+    fix:['先给一个信号，而不是全部内容：「我有件事想说，你今晚有空吗」','只说一件事，不铺开一整套旧账','允许自己说得不好，说清楚不是你的强项，说出来才是','对方回应后先谢谢他听见，再谈内容'],
+    grow:'深海也需要光。你说出口的那一句，就是光进来的地方。'},
+
+  'mid|high':{name:'灯塔型', tag:'你擅长照亮别人，站得稍远一点。', chip:'洞察 · 照顾 · 不太会求助',
+    script:'你很会听、很会接、很会替别人把话找到一个说法。你在关系里常是那个「更清醒的人」，也常是那个从来没被问过「你怎么样」的人。你给出的多，索取的少，久了会有点空。',
+    quote:'你替所有人举着灯，却很少问一句：谁替我换灯。',
+    pros:['洞察力强，能看见别人没说出口的部分','情绪承载力好，是关系里的稳定器','表达清晰，能把混乱的局面讲明白'],
+    risks:['长期做「给的那一方」，会累积不被看见的委屈','容易用「我懂你」替代「我需要你」，于是需求一直没被满足'],
+    talk:['把「我懂」换成「我也需要」——一句就够，不要配一整套解释','请求陪伴，而不是请求解决方案','被照顾时不要急着还回去，允许欠着'],
+    fix:['先承认自己也有需求，不把需求当软弱','选一个低风险的时刻开口，不要在对方正崩的时候','只说自己的感受，不评价对方的反应','事后确认一次：这次我被接住了吗'],
+    grow:'灯塔也需要有人替它换灯。允许自己被照亮一次。'},
+
+  'mid|mid':{name:'浮桥型', tag:'你是两座岛之间的那段路。', chip:'连接者 · 好说话 · 容易过载',
+    script:'你在关系里常常做连接者：调解、翻译、让气氛不至于断掉。你很会照顾场面，也很容易在照顾里把自己弄丢。你不缺共情，缺的是「我也算一个人」的位置。',
+    quote:'你一直在把两岸接起来，却很少站在自己的岸上。',
+    pros:['桥接能力强，能让关系活下来','耐性好，冲突里不容易激化','共情准确，能同时听懂两个人'],
+    risks:['过度承担别人的情绪','容易讨好，把委屈存成暗账','一旦你撤出，整段关系会突然塌'],
+    talk:['练习一句「这件事我不接」——不解释、不道歉、不加补偿方案','把「我来处理」改成「你希望我参与吗」','说清楚自己的份额：我能做这一步，剩下的你自己来'],
+    fix:['先分清这是谁的事','把承担停下来，先问一句「你需要我做什么」','只完成自己那一步，不越界补位','复盘时问自己：这次我有没有替别人活'],
+    grow:'桥也有自己的岸。你不必永远站在中间。'},
+
+  'mid|low':{name:'苔原型', tag:'安静，但会自己长回来。', chip:'低噪音 · 耐久 · 被低估',
+    script:'你不争、不抢、不解释，也不容易被打倒。你在关系里常是被低估的那一方：不热烈，但一直在。你的稳定不是没有情绪，而是把情绪处理得非常低调。',
+    quote:'苔原看起来是空的，其实整片土地都在活着。',
+    pros:['耐受力强，是长期主义者','不制造噪音，是很好的容器','可靠，不需要被提醒'],
+    risks:['沉默让别人误判你的在乎程度','习惯自己消化，久了会失去求助的能力'],
+    talk:['一句「我其实很在意，只是不太会说」就能改写很多误解','把「我自己可以」换成「这次我想你陪我」','具体一点：不说「随便」，说「我想吃那家」'],
+    fix:['先承认被忽略的感受，不要第一时间替对方找理由','说出一个具体期待，越小越好','允许对方做得不完美，不立刻接手','结束后给自己一点确认，而不是等对方给'],
+    grow:'让人看见你的绿。被看见的安静，才不再是背景。'},
+
+  'low|high':{name:'烟火型', tag:'响得很亮，留得不久。', chip:'热闹 · 会表达 · 回避靠近',
+    script:'你在人群里很亮：会讲、会玩、会把气氛点起来。但真到要靠近的时候，你会先撤。你的热闹是真的，你的距离也是真的——你用热闹，挡住「被看得太清楚」。',
+    quote:'你把自己点得很亮，是为了不让人看清你站在哪里。',
+    pros:['生命力强，能带人走出低谷','表达力好，关系里不闷','情绪有感染力，是很多场合的开关'],
+    risks:['习惯用玩笑绕过真话','热度退去后突然冷淡，让别人受伤','安静下来时会感到空'],
+    talk:['说一句不带笑点的真话，是你在关系里最有杀伤力的动作','把「开玩笑的」改成「其实我是认真的」','给出可预期的节奏：我会热，也会冷，但我会回来'],
+    fix:['先承认回避，不装作「我只是忙」','约定一个可以认真说话的时间，不带玩笑','一次只说一个真实感受，允许自己讲得不好','对方认真回应时，不要立刻用玩笑化解'],
+    grow:'烟火不必一直炸。有人的时候亮，没人的时候，也可以只是一盏灯。'},
+
+  'low|mid':{name:'岸线型', tag:'可以靠岸，但不能久留。', chip:'边界清晰 · 自足 · 怕被侵入',
+    script:'你对亲密没有敌意，只是有洁癖：太近会烦，太远会凉。你在关系里划着一条看不见的线，别人一越界你就后退，退完又觉得孤单。',
+    quote:'你不是不想靠近，你只是怕靠近之后，没有地方退回。',
+    pros:['自我边界清楚，不容易被裹挟','独立，情绪自足','判断冷静，不被情绪牵着走'],
+    risks:['边界太硬会挡掉真正的靠近','容易在「我需要空间」和「我好孤单」之间反复'],
+    talk:['把边界说成条件，而不是拒绝：「我可以待很久，但每周要有一晚是我自己的」','先说你需要什么（空间、时间、安静），而不是只说「别逼我」','给一个可预期的回归时间：「我今晚静一下，明早找你」'],
+    fix:['先讲清你需要的是什么，而不是先撤退','给一个可预期的回归时间，别让对方靠猜','冲突里先处理情绪，再谈边界','事后主动补一次连接，不让撤退变成失联'],
+    grow:'岸线不必一直守着。允许一个人在你的沙滩上，多坐一会儿。'},
+
+  'low|low':{name:'孤岛型', tag:'自给自足，偶尔想念岸。', chip:'独立 · 克制 · 不擅开口',
+    script:'你把「不麻烦别人」当成美德，把「我一个人也行」当成盔甲。你不是不想靠近，你是不太会开口。你的关系，往往要靠别人先走过来才成立。',
+    quote:'岛不需要桥，但岛也会在夜里，听见远处的船声。',
+    pros:['情绪自足，不消耗别人','可靠，说到做到','在混乱里特别稳'],
+    risks:['长期不表达需求，别人会以为你不需要','把孤独解释成自由','关系容易变成「谁都不欠谁」的疏离'],
+    talk:['从「我需要帮忙」这四个字开始练，别在后面加「不过没关系」','把陈述换成请求：不说「我没事」，说「你能陪我十分钟吗」','接受帮助时只说谢谢，不加补偿方案'],
+    fix:['先承认自己也想被在意，不必说给谁听，先说给自己','找一个低风险的人，提一个小请求','被帮助时只说谢谢，不加补偿','记录一次「开口其实没那么可怕」，下次用得上'],
+    grow:'岛也可以有港口。你不必永远只做自己的岸。'}
+};
+
+/* ============================================================
+   状态与工具
+   ============================================================ */
+const state = { i:0, ans:new Array(QS.length).fill(null) };
 const $ = id => document.getElementById(id);
-const views = { cover:$("cover"), quiz:$("quiz"), result:$("result") };
 
-function showView(name){
-  Object.values(views).forEach(v => v.classList.remove("active"));
-  views[name].classList.add("active");
-  window.scrollTo(0,0);
+/* 分数 = 百分位：先抽样 12000 份随机作答，得到每个维度/两轴的分布，
+   再算你的得分排在什么位置。这样 0-100 和低/中/高天然对齐。 */
+const DIST = (()=>{
+  const keys = ['sec','emp','bnd','act','stb','exp','x','y'];
+  let seed = 20261126;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+  const rows = [];
+  for(let t=0; t<12000; t++){
+    const s = {sec:0,emp:0,bnd:0,act:0,stb:0,exp:0,x:0,y:0};
+    QS.forEach(q=>{
+      const o = q.o[Math.floor(rnd() * q.o.length)];
+      keys.forEach(k => s[k] += (k==='x'||k==='y') ? o[k] : o.w[k]);
+    });
+    rows.push(s);
+  }
+  const out = {};
+  keys.forEach(k => out[k] = rows.map(r => r[k]).sort((a,b)=>a-b));
+  return out;
+})();
+
+function pct(k, sum){
+  const a = DIST[k];
+  if(!a || !a.length) return 50;
+  let lo = 0, hi = a.length;
+  while(lo < hi){ const m = (lo + hi) >> 1; if(a[m] < sum) lo = m + 1; else hi = m; }
+  return Math.max(1, Math.min(99, Math.round(lo / a.length * 100)));
+}
+const clamp = (v,a,b)=> Math.max(a, Math.min(b, v));
+const bandOf = v => v >= 67 ? 'high' : (v >= 33 ? 'mid' : 'low');
+
+/* ============================================================
+   视图切换
+   ============================================================ */
+function show(id){
+  ['v-cover','v-quiz','v-result'].forEach(v => $(v).classList.toggle('on', v===id));
+  window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
 }
 
-/* ================= 测试渲染 ================= */
-function renderQuestion(){
-  const i = state.current;
-  const q = QUESTIONS[i];
-  $("stepLabel").textContent = `第 ${i+1} / ${QUESTIONS.length} 题`;
-  $("progressBar").style.width = ((i) / QUESTIONS.length * 100) + "%";
-  $("qIndex").textContent = "QUESTION " + String(i+1).padStart(2,"0");
-  $("qText").textContent = q.text;
+/* ============================================================
+   测试页渲染
+   ============================================================ */
+function renderQ(){
+  const q = QS[state.i];
+  $('prog').style.width = ((state.i+1)/QS.length*100) + '%';
+  $('stage').textContent = q.stage;
+  $('qnum').textContent = String(state.i+1).padStart(2,'0') + ' / ' + QS.length;
+  $('qidx').textContent = String(state.i+1).padStart(2,'0');
+  $('qtext').textContent = q.q;
 
-  const box = $("options");
-  box.innerHTML = "";
-  q.options.forEach((opt, idx) => {
-    const el = document.createElement("div");
-    el.className = "option" + (state.answers[i] === idx ? " selected" : "");
-    el.innerHTML = `<div class="badge"><span>${opt.label}</span></div><div class="opt-text"><span>${opt.text}</span></div>`;
-    el.addEventListener("click", () => selectOption(idx, el));
-    box.appendChild(el);
+  const box = $('opts');
+  box.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.o.forEach((o,idx)=>{
+    const b = document.createElement('button');
+    b.className = 'opt' + (state.ans[state.i]===idx ? ' sel' : '');
+    b.innerHTML = '<span class="dot">' + (state.ans[state.i]===idx ? '✓' : letters[idx]) + '</span>' +
+                  '<span class="txt">' + o.t + '</span>';
+    b.onclick = () => {
+      state.ans[state.i] = idx;
+      renderQ();
+      setTimeout(()=>{
+        if(state.i < QS.length-1){ state.i++; renderQ(); window.scrollTo({top:0,behavior:'smooth'}); }
+        else { compute(); }
+      }, 260);
+    };
+    box.appendChild(b);
   });
 
-  $("prevBtn").disabled = i === 0;
-  const nextBtn = $("nextBtn");
-  nextBtn.disabled = state.answers[i] === null;
-  nextBtn.textContent = i === QUESTIONS.length - 1 ? "查看结果" : "下一题";
+  $('btn-prev').disabled = state.i===0;
+  $('btn-next').textContent = state.i===QS.length-1 ? '查看结果 →' : '下一题 →';
+  $('btn-next').disabled = state.ans[state.i]===null;
 }
 
-function selectOption(idx, el){
-  state.answers[state.current] = idx;
-  document.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
-  el.classList.add("selected");
-  $("nextBtn").disabled = false;
-  setTimeout(() => {
-    if(state.current < QUESTIONS.length - 1) nextQuestion();
-  }, 320);
+/* ============================================================
+   结果计算与渲染
+   ============================================================ */
+function compute(){
+  const sum = {sec:0,emp:0,bnd:0,act:0,stb:0,exp:0,x:0,y:0};
+  QS.forEach((q,i)=>{
+    const o = q.o[state.ans[i]];
+    if(!o) return;
+    ['sec','emp','bnd','act','stb','exp'].forEach(k => sum[k] += o.w[k]);
+    sum.x += o.x; sum.y += o.y;
+  });
+
+  const D = DIMS.map(d => ({...d, v: pct(d.k, sum[d.k])}));
+  const X = pct('x', sum.x), Y = pct('y', sum.y);
+  const bX = bandOf(X);
+  const bY = bandOf(Y);
+  const type = TYPES[bX + '|' + bY] || TYPES['mid|mid'];
+
+  renderResult({D, X, Y, type, bX, bY});
+  show('v-result');
 }
 
-function nextQuestion(){
-  if(state.answers[state.current] === null) return;
-  if(state.current < QUESTIONS.length - 1){
-    state.current++;
-    renderQuestion();
+function renderResult({D,X,Y,type,bX,bY}){
+  /* 类型 */
+  $('type-name').textContent = type.name;
+  $('type-tag').textContent = type.tag;
+  $('type-chip').textContent = type.chip;
+
+  /* 两维 */
+  const xTxt = {high:'你需要的亲密浓度偏高', mid:'你的亲密需求适中', low:'你对距离的需求偏强'}[bX];
+  const yTxt = {high:'情绪一有波动，你就想让人看见', mid:'你会表达，也会挑时机', low:'你几乎不在外面泄漏情绪'}[bY];
+  $('x-val').textContent = X + ' / 100';
+  $('y-val').textContent = Y + ' / 100';
+  $('x-desc').textContent = xTxt;
+  $('y-desc').textContent = yTxt;
+  setTimeout(()=>{
+    $('x-bar').style.width = X + '%';
+    $('y-bar').style.width = Y + '%';
+    const dot = $('quad-dot');
+    dot.style.left = (12 + X*0.76) + '%';
+    dot.style.top  = (88 - Y*0.76) + '%';
+  }, 60);
+
+  /* 雷达图 */
+  drawRadar(D);
+
+  /* 维度条 */
+  const dims = $('dims');
+  dims.innerHTML = '';
+  D.forEach(d=>{
+    const note = DIM_NOTE[d.k][d.v>=67 ? 'hi' : 'lo'];
+    const el = document.createElement('div');
+    el.className = 'dim';
+    el.innerHTML =
+      '<div class="dim-top"><span>' + d.n + '</span><b>' + d.v + '</b></div>' +
+      '<div class="dim-bar"><i data-w="' + d.v + '"></i></div>' +
+      '<div class="dim-note">' + note + '</div>';
+    dims.appendChild(el);
+  });
+  setTimeout(()=>{
+    dims.querySelectorAll('.dim-bar i').forEach(i => i.style.width = i.dataset.w + '%');
+  }, 80);
+
+  /* 剧本 / 优势 / 风险 / 沟通 / 修复 / 成长 */
+  $('script').textContent = type.script;
+  $('quote').textContent = '「' + type.quote + '」';
+  $('pros').innerHTML  = type.pros.map(t => '<li>' + t + '</li>').join('');
+  $('risks').innerHTML = type.risks.map(t => '<li>' + t + '</li>').join('');
+  $('talk').innerHTML  = type.talk.map(t => '<li>' + t + '</li>').join('');
+  $('fix').innerHTML   = type.fix.map(t => '<li>' + t + '</li>').join('');
+  $('grow').textContent = type.grow;
+}
+
+/* ============================================================
+   雷达图（纯 SVG 手绘）
+   ============================================================ */
+function drawRadar(D){
+  const svg = $('radar');
+  const cx=160, cy=168, R=98, N=6;
+  const ang = i => (-90 + i*360/N) * Math.PI/180;
+  const px = (v,i) => cx + Math.cos(ang(i)) * R * v;
+  const py = (v,i) => cy + Math.sin(ang(i)) * R * v;
+  const scale = v => (22 + v*0.78)/100;   /* 最低 22%，避免图形塌成一点 */
+
+  let s = '';
+  /* 网格 */
+  [0.25,0.5,0.75,1].forEach(r=>{
+    const pts = [...Array(N)].map((_,i)=> px(r,i).toFixed(1) + ',' + py(r,i).toFixed(1)).join(' ');
+    s += '<polygon points="' + pts + '" fill="none" stroke="' +
+         (r===1 ? '#c3d9ee' : '#e2ecf7') + '" stroke-width="' + (r===1?1.3:1) + '"/>';
+  });
+  /* 辐条 */
+  for(let i=0;i<N;i++){
+    s += '<line x1="' + cx + '" y1="' + cy + '" x2="' + px(1,i).toFixed(1) + '" y2="' + py(1,i).toFixed(1) +
+         '" stroke="#dfeaf6" stroke-width="1"/>';
+  }
+  /* 数据多边形 */
+  const pts = D.map((d,i)=> px(scale(d.v),i).toFixed(1) + ',' + py(scale(d.v),i).toFixed(1)).join(' ');
+  s += '<polygon points="' + pts + '" fill="rgba(47,127,193,.16)" stroke="#2f7fc1" stroke-width="1.8" stroke-linejoin="round"/>';
+  /* 顶点 */
+  D.forEach((d,i)=>{
+    s += '<circle cx="' + px(scale(d.v),i).toFixed(1) + '" cy="' + py(scale(d.v),i).toFixed(1) +
+         '" r="3.2" fill="#2f7fc1"/>';
+  });
+  /* 标签 */
+  D.forEach((d,i)=>{
+    const lx = cx + Math.cos(ang(i)) * (R+24);
+    const ly = cy + Math.sin(ang(i)) * (R+24);
+    const anchor = Math.abs(Math.cos(ang(i))) < 0.15 ? 'middle' : (Math.cos(ang(i)) > 0 ? 'start' : 'end');
+    const dy = Math.sin(ang(i)) > 0.6 ? 8 : (Math.sin(ang(i)) < -0.6 ? -2 : 4);
+    s += '<text x="' + lx.toFixed(1) + '" y="' + (ly+dy).toFixed(1) + '" text-anchor="' + anchor +
+         '" font-size="12" fill="#5b7793" font-family="Noto Sans SC,sans-serif">' + d.n + '</text>';
+    s += '<text x="' + lx.toFixed(1) + '" y="' + (ly+dy+14).toFixed(1) + '" text-anchor="' + anchor +
+         '" font-size="10" fill="#93aac2" font-family="Noto Sans SC,sans-serif">' + d.v + '</text>';
+  });
+  svg.innerHTML = s;
+}
+
+/* ============================================================
+   事件绑定
+   ============================================================ */
+$('btn-start').onclick = () => { state.i=0; state.ans.fill(null); renderQ(); show('v-quiz'); };
+
+$('btn-prev').onclick = () => {
+  if(state.i>0){ state.i--; renderQ(); window.scrollTo({top:0,behavior:'smooth'}); }
+};
+
+$('btn-next').onclick = () => {
+  if(state.ans[state.i]===null) return;
+  if(state.i < QS.length-1){ state.i++; renderQ(); window.scrollTo({top:0,behavior:'smooth'}); }
+  else { compute(); }
+};
+
+$('btn-again').onclick = () => { state.i=0; state.ans.fill(null); renderQ(); show('v-cover'); };
+
+/* ============================================================
+   口令验证
+   ============================================================ */
+(function(){
+  const KEY = 'pt_access_ok';
+  const gate   = $('gate');
+  const wrapEl = $('gate-wrap');
+  const site   = $('site');
+  const input  = $('pwd');
+  const errEl  = $('err');
+  const eyeBtn = $('btn-eye');
+  const enter  = $('btn-enter');
+
+  let fails = 0;
+  let cooling = false;
+
+  const store = {
+    read(){ try { return sessionStorage.getItem(KEY) === '1'; } catch(e){ return false; } },
+    write(){ try { sessionStorage.setItem(KEY, '1'); } catch(e){} }
+  };
+
+  function unlock(){
+    gate.style.display = 'none';
+    site.style.display = 'block';
+    window.scrollTo({ top:0 });
+  }
+
+  function say(msg){
+    errEl.textContent = msg;
+    errEl.classList.toggle('show', !!msg);
+  }
+
+  function wrong(){
+    fails++;
+    wrapEl.classList.remove('shake');
+    void wrapEl.offsetWidth;              /* 重启动画 */
+    wrapEl.classList.add('shake');
+    input.select();
+    if(fails >= ACCESS_CONFIG.maxTry){
+      cooling = true;
+      let left = Math.ceil(ACCESS_CONFIG.cooldown / 1000);
+      input.disabled = true; enter.disabled = true;
+      say('尝试次数过多，请等待 ' + left + ' 秒');
+      const tick = setInterval(()=>{
+        left--;
+        if(left <= 0){
+          clearInterval(tick);
+          cooling = false; fails = 0;
+          input.disabled = false; enter.disabled = false;
+          say(''); input.focus();
+        } else {
+          say('尝试次数过多，请等待 ' + left + ' 秒');
+        }
+      }, 1000);
+    } else {
+      say('口令不正确，请再试一次');
+    }
+  }
+
+  function submit(){
+    if(cooling) return;
+    if(!PASS){
+      say('未读取到 config.js 中的口令，请检查该文件是否与页面同目录');
+      return;
+    }
+    const v = (input.value || '').trim();
+    if(!v){ say('请先输入口令'); input.focus(); return; }
+    if(v === PASS){
+      say('');
+      if(ACCESS_CONFIG.remember) store.write();
+      unlock();
+    } else {
+      input.value = '';
+      wrong();
+    }
+  }
+
+  enter.addEventListener('click', submit);
+  input.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); submit(); } });
+  input.addEventListener('input', () => { if(errEl.classList.contains('show')) say(''); });
+
+  eyeBtn.addEventListener('click', () => {
+    const showing = input.type === 'text';
+    input.type = showing ? 'password' : 'text';
+    eyeBtn.textContent = showing ? '显示' : '隐藏';
+    input.focus();
+  });
+
+  /* 已解锁过（同一会话内刷新）则直接进入 */
+  if(ACCESS_CONFIG.remember && store.read()){
+    unlock();
   } else {
-    finishQuiz();
+    if(!PASS){
+      /* 配置缺失：保持锁定，并给出可读提示，绝不默认放行 */
+      say('未读取到口令配置，请确认 config.js 与 index.html 在同一目录');
+    }
+    /* 桌面端自动聚焦光标，手机端不主动弹键盘 */
+    const fine = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+    if(fine) setTimeout(()=>{ try{ input.focus(); }catch(e){} }, 260);
   }
-}
-
-$("nextBtn").addEventListener("click", nextQuestion);
-$("prevBtn").addEventListener("click", () => {
-  if(state.current > 0){ state.current--; renderQuestion(); }
-});
-
-$("startBtn").addEventListener("click", () => {
-  state.current = 0;
-  state.answers.fill(null);
-  showView("quiz");
-  renderQuestion();
-});
-
-/* ================= 计分与结果 ================= */
-function calcResult(){
-  const dimMap = {};
-  DIMENSIONS.forEach(d => dimMap[d.key] = { sum:0, count:0 });
-  let totalSum = 0;
-  QUESTIONS.forEach((q, i) => {
-    const opt = q.options[state.answers[i]];
-    dimMap[q.dim].sum += opt.score;
-    dimMap[q.dim].count++;
-    totalSum += opt.score;
-  });
-  const dimScores = DIMENSIONS.map(d => {
-    const m = dimMap[d.key];
-    return Math.round((m.sum / (m.count * 4)) * 100);
-  });
-  const total = Math.round((totalSum / (QUESTIONS.length * 4)) * 100);
-  return { dimScores, total };
-}
-
-function verdictOf(total){
-  if(total >= 80) return { title:"☀ 内心晴空万里", desc:"你此刻的状态在线且稳定，情绪有弹性，也带着对生活的掌控感。好好守住这份秩序，它是你向内生长的土壤。" };
-  if(total >= 65) return { title:"⛅ 偶有云翳，整体平稳", desc:"多数时候你能接住自己，只是某些角落还飘着几朵小云。不必急着驱散它们，觉察到，就是照顾的开始。" };
-  if(total >= 50) return { title:"🌥 风中有朵雨做的云", desc:"你近来有些疲惫，能量和情绪都在低位徘徊。记得给自己留白，先休息，再谈坚持。" };
-  return { title:"🌧 天空有些低沉", desc:"你承受的压力可能已经超出了日常能消化的范围。请放慢脚步，允许自己脆弱；若持续低落，记得向身边人或专业人士求助。" };
-}
-
-function finishQuiz(){
-  const { dimScores, total } = calcResult();
-  $("progressBar").style.width = "100%";
-
-  const C = 402;
-  const ring = $("ringFg");
-  ring.style.strokeDashoffset = C - (C * total / 100);
-  $("totalScore").textContent = total;
-
-  const v = verdictOf(total);
-  $("verdictTitle").textContent = v.title;
-  $("verdictDesc").textContent = v.desc;
-
-  const list = $("dimList");
-  list.innerHTML = "";
-  DIMENSIONS.forEach((d, i) => {
-    const score = dimScores[i];
-    const desc = score >= 80 ? "状态充沛，值得保持" : score >= 60 ? "尚可，仍有余地生长" : score >= 45 ? "略薄弱，需要多些关照" : "偏低，是近期最该留心的方向";
-    const item = document.createElement("div");
-    item.className = "dim-item";
-    item.innerHTML = `
-      <div class="dim-top">
-        <span class="dim-name">${d.name}</span>
-        <span class="dim-score">${score}</span>
-      </div>
-      <div class="dim-bar"><div class="fill" style="width:${score}%"></div></div>
-      <div class="dim-desc">${d.desc} · ${desc}</div>`;
-    list.appendChild(item);
-  });
-
-  showView("result");
-  renderRadar(dimScores);
-}
-
-function renderRadar(dimScores){
-  const chartEl = $("radar");
-  if(typeof echarts === "undefined"){
-    chartEl.innerHTML = "<div style='text-align:center;color:#6B7C8F;padding:60px 0;font-size:13px'>雷达图加载失败（需联网加载图表库），可参考下方维度得分</div>";
-    return;
-  }
-  const chart = echarts.init(chartEl);
-  chart.setOption({
-    grid:{ left:10, right:10, top:10, bottom:10 },
-    radar:{
-      indicator: DIMENSIONS.map(d => ({ name:d.name, max:100 })),
-      radius:"68%",
-      center:["50%","52%"],
-      axisName:{ color:"#2C3E50", fontSize:12 },
-      splitLine:{ lineStyle:{ color:"#DCEEF9" } },
-      splitArea:{ areaStyle:{ color:["#FFFFFF","#F2F8FD"] } },
-      axisLine:{ lineStyle:{ color:"#A8D4F0" } }
-    },
-    series:[{
-      type:"radar",
-      data:[{
-        value: dimScores,
-        name:"内心状态",
-        areaStyle:{ color:"rgba(111,168,220,.32)" },
-        lineStyle:{ color:"#3E7CB1", width:2 },
-        itemStyle:{ color:"#3E7CB1" },
-        symbolSize:5
-      }]
-    }]
-  });
-  window.addEventListener("resize", () => chart.resize());
-}
-
-$("retryBtn").addEventListener("click", () => {
-  state.current = 0;
-  state.answers.fill(null);
-  showView("cover");
-});
+})();
 </script>
 </body>
 </html>
